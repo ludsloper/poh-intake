@@ -115,11 +115,7 @@ export default function Spinnenweb({
 										<label key={q.id} className="space-y-2">
 											<span className="text-sm text-foreground/90 flex items-center gap-2">
 												{q.text}
-												{!hasAnswer && (
-													<span className="inline-flex items-center rounded-md bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200 px-2 py-0.5 text-[11px]">
-														Niet ingevuld
-													</span>
-												)}
+								{/* label voor niet ingevuld verwijderd */}
 											</span>
 											<div className="flex items-center gap-4">
 												<span className="text-xs text-muted-foreground w-8 text-right">0</span>
