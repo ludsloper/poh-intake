@@ -30,6 +30,7 @@ function App() {
 	const [result4dkl, setResult4dkl] = useState<FourDKLResult | null>(null)
 	const [resultSpinnenweb, setResultSpinnenweb] = useState<SpinnenwebResult | null>(null)
 	const [contactEmail, setContactEmail] = useState<string>('')
+	const [contactNote, setContactNote] = useState<string>('')
 	const [adviceRequestSent, setAdviceRequestSent] = useState<boolean>(false)
 
 	function moveAdvice(key: string, direction: 'up' | 'down') {
@@ -57,6 +58,7 @@ function App() {
 		// Verzamel resultaten voor een eventuele backend-integratie
 		const payload = {
 			contactEmail,
+			contactNote,
 			adviceRanking,
 			numAppointments,
 			preferences,
@@ -351,7 +353,7 @@ function App() {
 					{/* Behandeladvies aanvragen */}
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">Vraag behandeladvies aan</p>
-						<div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
+						<div className="grid gap-3">
 							<input
 								type="email"
 								placeholder="jouw@email.nl"
@@ -359,13 +361,22 @@ function App() {
 								onChange={(e) => { setContactEmail(e.target.value); setAdviceRequestSent(false) }}
 								className="rounded-md border bg-background px-3 py-2 text-sm"
 							/>
-							<button
-								className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50"
-								disabled={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)}
-								onClick={handleRequestAdvice}
-							>
-								Vraag behandeladvies aan
-							</button>
+							<textarea
+								placeholder="Opmerkingen (optioneel)"
+								value={contactNote}
+								onChange={(e) => { setContactNote(e.target.value); setAdviceRequestSent(false) }}
+								rows={4}
+								className="rounded-md border bg-background px-3 py-2 text-sm"
+							/>
+							<div className="flex justify-end">
+								<button
+									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50"
+									disabled={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)}
+									onClick={handleRequestAdvice}
+								>
+									Vraag behandeladvies aan
+								</button>
+							</div>
 						</div>
 						{adviceRequestSent && (
 							<p className="text-xs text-green-600">Aanvraag verstuurd. We nemen contact met je op via e-mail.</p>
@@ -373,10 +384,17 @@ function App() {
 					</div>
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">Jouw volgorde (1 = belangrijkste):</p>
-						<ol className="list-decimal pl-6 space-y-2">
-							{adviceRanking.map((key) => {
+						<ol className="space-y-2 list-none">
+							{adviceRanking.map((key, idx) => {
 								const option = ADVICE_OPTIONS.find((o) => o.key === key)!
-								return <li key={key} className="flex items-center"><span className="flex-1">{option.label}</span></li>
+								return (
+									<li key={key} className="flex items-center gap-3">
+										<span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 text-sm">
+											{idx + 1}
+										</span>
+										<span className="flex-1">{option.label}</span>
+									</li>
+								)
 							})}
 						</ol>
 					</div>
