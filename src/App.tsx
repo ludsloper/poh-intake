@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import './App.css'
+import Test4DKL, { type FourDKLResult } from './components/Test4DKL'
+import Spinnenweb, { type SpinnenwebResult } from './components/Spinnenweb'
+import { downloadCsv, printPage } from './utils/export'
 
 type Step = 'landing' | 'tests' | 'quiz' | 'summary'
 
@@ -24,6 +27,8 @@ function App() {
 	const [numAppointments, setNumAppointments] = useState<number | null>(null)
 	const [preference, setPreference] = useState<string>('')
 	const [selectedTest, setSelectedTest] = useState<'4dkl' | 'spinnenweb' | ''>('')
+	const [result4dkl, setResult4dkl] = useState<FourDKLResult | null>(null)
+	const [resultSpinnenweb, setResultSpinnenweb] = useState<SpinnenwebResult | null>(null)
 
 	function moveAdvice(key: string, direction: 'up' | 'down') {
 		setAdviceRanking((prev) => {
@@ -160,12 +165,30 @@ function App() {
 				</div>
 			)}
 
-			{step === 'quiz' && (
+			{step === 'quiz' && selectedTest === '4dkl' && (
+				<Test4DKL
+					onBack={() => setStep('tests')}
+					onComplete={(res) => {
+						setResult4dkl(res)
+						setStep('summary')
+					}}
+				/>
+			)}
+
+			{step === 'quiz' && selectedTest === 'spinnenweb' && (
+				<Spinnenweb
+					onBack={() => setStep('tests')}
+					onComplete={(res) => {
+						setResultSpinnenweb(res)
+						setStep('summary')
+					}}
+				/>
+			)}
+
+			{step === 'quiz' && selectedTest === '' && (
 				<div className="space-y-4">
 					<h2 className="text-2xl font-semibold tracking-tight">Algemene vragen</h2>
-					{selectedTest !== '' && (
-						<p className="text-sm text-muted-foreground">Gekozen test: {selectedTest === '4dkl' ? '4DKL' : 'Spinnenweb'}</p>
-					)}
+					<p className="text-sm text-muted-foreground">Gekozen test: geen</p>
 
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">1. Welk advies is vooral op jou van toepassing?</p>
@@ -273,10 +296,33 @@ function App() {
 			{step === 'summary' && (
 				<div className="space-y-4">
 					<h2 className="text-2xl font-semibold tracking-tight">Samenvatting</h2>
+					<p className="text-xs text-muted-foreground">Let op: interpretaties zijn indicatief en vervangen geen diagnose.</p>
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
 						<p className="text-sm font-medium text-muted-foreground">Gekozen test:</p>
 						<p className="text-lg font-semibold">{selectedTest === '4dkl' ? '4DKL' : selectedTest === 'spinnenweb' ? 'Spinnenweb' : '-'}</p>
 					</div>
+					{result4dkl && (
+						<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
+							<p className="text-sm font-medium text-muted-foreground">4DKL scores:</p>
+							<ul className="grid sm:grid-cols-2 gap-2 text-sm">
+								<li><span className="font-medium">Distress:</span> {result4dkl.distress}</li>
+								<li><span className="font-medium">Depressie:</span> {result4dkl.depressie}</li>
+								<li><span className="font-medium">Angst:</span> {result4dkl.angst}</li>
+								<li><span className="font-medium">Somatisatie:</span> {result4dkl.somatisatie}</li>
+							</ul>
+							<p className="text-xs text-muted-foreground">Interpretatie volgt officiële handleiding; voeg cutoffs toe zodra beschikbaar.</p>
+						</div>
+					)}
+					{resultSpinnenweb && (
+						<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
+							<p className="text-sm font-medium text-muted-foreground">Spinnenweb scores:</p>
+							<ul className="grid sm:grid-cols-2 gap-2 text-sm">
+								{Object.entries(resultSpinnenweb).map(([k, v]) => (
+									<li key={k}><span className="font-medium">{k}:</span> {v}</li>
+								))}
+							</ul>
+						</div>
+					)}
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">Jouw volgorde (1 = belangrijkste):</p>
 						<ol className="space-y-2">
@@ -299,7 +345,33 @@ function App() {
 							{preference === 'online' && 'Online apps en coaching'}
 						</p>
 					</div>
-					<div className="flex justify-end gap-3 pt-2">
+					<div className="flex justify-between gap-3 pt-2">
+						<div className="flex gap-2">
+							<button
+								className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
+								onClick={() => {
+								const rows: string[][] = [
+									['Gekozen test', selectedTest || '-'],
+									['Distress', result4dkl ? String(result4dkl.distress) : '-'],
+									['Depressie', result4dkl ? String(result4dkl.depressie) : '-'],
+									['Angst', result4dkl ? String(result4dkl.angst) : '-'],
+									['Somatisatie', result4dkl ? String(result4dkl.somatisatie) : '-'],
+								]
+								if (resultSpinnenweb) {
+									for (const [k, v] of Object.entries(resultSpinnenweb)) rows.push([k, String(v)])
+								}
+								downloadCsv('resultaten.csv', rows)
+							}}
+							>
+								Exporteer CSV
+							</button>
+							<button
+								className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
+								onClick={printPage}
+							>
+								Print/PDF
+							</button>
+						</div>
 						<button
 							className="inline-flex items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
 							onClick={() => setStep('quiz')}
