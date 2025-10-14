@@ -25,10 +25,12 @@ function App() {
 		ADVICE_OPTIONS.map((o) => o.key),
 	)
 	const [numAppointments, setNumAppointments] = useState<number | null>(null)
-	const [preference, setPreference] = useState<string>('')
+	const [preferences, setPreferences] = useState<string[]>([])
 	const [selectedTest, setSelectedTest] = useState<'4dkl' | 'spinnenweb' | ''>('')
 	const [result4dkl, setResult4dkl] = useState<FourDKLResult | null>(null)
 	const [resultSpinnenweb, setResultSpinnenweb] = useState<SpinnenwebResult | null>(null)
+	const [contactEmail, setContactEmail] = useState<string>('')
+	const [adviceRequestSent, setAdviceRequestSent] = useState<boolean>(false)
 
 	function moveAdvice(key: string, direction: 'up' | 'down') {
 		setAdviceRanking((prev) => {
@@ -46,16 +48,31 @@ function App() {
 	function resetQuiz() {
 		setAdviceRanking(ADVICE_OPTIONS.map((o) => o.key))
 		setNumAppointments(null)
-		setPreference('')
+		setPreferences([])
 	}
 
-	const isQuizComplete = adviceRanking.length === 5 && numAppointments !== null && preference !== ''
+	const isQuizComplete = adviceRanking.length === 5 && numAppointments !== null && preferences.length > 0
+
+	function handleRequestAdvice() {
+		// Verzamel resultaten voor een eventuele backend-integratie
+		const payload = {
+			contactEmail,
+			adviceRanking,
+			numAppointments,
+			preferences,
+			selectedTest,
+			result4dkl,
+			resultSpinnenweb,
+		}
+		console.log('Aanvraag behandeladvies:', payload)
+		setAdviceRequestSent(true)
+	}
 
 	return (
 		<div className="max-w-3xl mx-auto p-6 sm:p-8 space-y-6 bg-gradient-to-b from-orange-50 via-amber-50 to-white dark:from-orange-900/20 dark:via-amber-900/10 dark:to-background rounded-2xl">
 			{step === 'landing' && (
 				<div className="space-y-4">
-					<h1 className="text-3xl font-semibold tracking-tight bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Mentaal Studentarts</h1>
+					<h1 className="text-3xl font-semibold tracking-tight bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Student Mentaal </h1>
 					<p className="text-muted-foreground">De mentaal StudentArts methode:</p>
 					<p className="leading-relaxed text-foreground/90">
 						Het aanvaarden van jouw klachten staat centraal (acceptatie). Je leert om het zinloze gevecht met (vervelende)
@@ -87,9 +104,9 @@ function App() {
 					<div className="flex justify-end gap-3 pt-2">
 						<button
 							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
-							onClick={() => setStep('tests')}
+							onClick={() => setStep('quiz')}
 						>
-							Start test
+							Start
 						</button>
 					</div>
 				</div>
@@ -113,15 +130,14 @@ function App() {
 								<li>Meet 4 schalen: Distress (16), Depressie (6), Angst (12), Somatisatie (16)</li>
 								<li>Breed gebruikt in huisartsen- en bedrijfszorg</li>
 							</ul>
-							<div className="flex items-center gap-2 pt-1">
-								<a href="https://datec.nl/4dkl/" target="_blank" rel="noreferrer" className="text-sm text-orange-600 hover:underline">Meer info</a>
-							</div>
-							<div className="mt-auto flex justify-end">
+							
+							<div className="mt-auto flex justify-between items-center">
+								{result4dkl && <span className="text-xs text-green-600">Ingevuld</span>}
 								<button
 									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
 									onClick={() => { setSelectedTest('4dkl'); setStep('quiz') }}
 								>
-									Start 4DKL
+									{result4dkl ? 'Wijzig 4DKL' : 'Start 4DKL'}
 								</button>
 							</div>
 						</div>
@@ -138,12 +154,13 @@ function App() {
 								<li>Visueel spinnenweb over: lichamelijk, mentaal, zingeving, kwaliteit van leven, meedoen, dagelijks functioneren</li>
 								<li>Helpt bij inzicht en gesprek over wat voor jou belangrijk is</li>
 							</ul>
-							<div className="mt-auto flex justify-end">
+							<div className="mt-auto flex justify-between items-center">
+								{resultSpinnenweb && <span className="text-xs text-green-600">Ingevuld</span>}
 								<button
 									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
 									onClick={() => { setSelectedTest('spinnenweb'); setStep('quiz') }}
 								>
-									Start Spinnenweb
+									{resultSpinnenweb ? 'Wijzig Spinnenweb' : 'Start Spinnenweb'}
 								</button>
 							</div>
 						</div>
@@ -157,9 +174,9 @@ function App() {
 						</button>
 						<button
 							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
-							onClick={() => setStep('quiz')}
+							onClick={() => setStep('summary')}
 						>
-							Sla over en ga verder
+							Afronden
 						</button>
 					</div>
 				</div>
@@ -170,7 +187,7 @@ function App() {
 					onBack={() => setStep('tests')}
 					onComplete={(res) => {
 						setResult4dkl(res)
-						setStep('summary')
+						setStep('tests')
 					}}
 				/>
 			)}
@@ -180,7 +197,7 @@ function App() {
 					onBack={() => setStep('tests')}
 					onComplete={(res) => {
 						setResultSpinnenweb(res)
-						setStep('summary')
+						setStep('tests')
 					}}
 				/>
 			)}
@@ -188,7 +205,7 @@ function App() {
 			{step === 'quiz' && selectedTest === '' && (
 				<div className="space-y-4">
 					<h2 className="text-2xl font-semibold tracking-tight">Algemene vragen</h2>
-					<p className="text-sm text-muted-foreground">Gekozen test: geen</p>
+					<p className="text-sm text-muted-foreground">Beantwoord eerst de algemene vragen. Daarna kun je optioneel een test kiezen.</p>
 
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">1. Welk advies is vooral op jou van toepassing?</p>
@@ -249,29 +266,37 @@ function App() {
 					</div>
 
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
-						<p className="text-sm font-medium text-muted-foreground">3. Welke behandeling heeft jouw voorkeur?</p>
+						<p className="text-sm font-medium text-muted-foreground">3. Welke behandeling(en) hebben jouw voorkeur?</p>
 						<div className="flex flex-col gap-2">
 							{[
 								{ key: 'poh_ggz', label: 'Face to face met POH GGZ' },
 								{ key: 'sport', label: 'Sport en bewegen' },
 								{ key: 'group', label: 'Groepsbijeenkomst lotgenoten' },
 								{ key: 'online', label: 'Online apps en coaching' },
-							].map((opt) => (
-								<label
-									key={opt.key}
-									className={`${preference === opt.key ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} flex items-center gap-2 rounded-md border px-3 py-2`}
-								>
-									<input
-										type="radio"
-										name="preference"
-										value={opt.key}
-										checked={preference === opt.key}
-										onChange={() => setPreference(opt.key)}
-										className="sr-only"
-									/>
-									<span>{opt.label}</span>
-								</label>
-							))}
+							].map((opt) => {
+								const checked = preferences.includes(opt.key)
+								return (
+									<label
+										key={opt.key}
+										className={`${checked ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} flex items-center gap-2 rounded-md border px-3 py-2`}
+									>
+										<input
+											type="checkbox"
+											name={`preference-${opt.key}`}
+											value={opt.key}
+											checked={checked}
+											onChange={(e) => {
+												const { checked } = e.target
+												setPreferences((prev) => (
+													checked ? Array.from(new Set([...prev, opt.key])) : prev.filter((k) => k !== opt.key)
+												))
+											}}
+											className="sr-only"
+										/>
+										<span>{opt.label}</span>
+									</label>
+								)
+							})}
 						</div>
 					</div>
 
@@ -284,10 +309,10 @@ function App() {
 						</button>
 						<button
 							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50"
-							onClick={() => setStep('summary')}
+							onClick={() => setStep('tests')}
 							disabled={!isQuizComplete}
 						>
-							Bekijk samenvatting
+							Verder naar optionele tests
 						</button>
 					</div>
 				</div>
@@ -323,9 +348,32 @@ function App() {
 							</ul>
 						</div>
 					)}
+					{/* Behandeladvies aanvragen */}
+					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
+						<p className="text-sm font-medium text-muted-foreground">Vraag behandeladvies aan</p>
+						<div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
+							<input
+								type="email"
+								placeholder="jouw@email.nl"
+								value={contactEmail}
+								onChange={(e) => { setContactEmail(e.target.value); setAdviceRequestSent(false) }}
+								className="rounded-md border bg-background px-3 py-2 text-sm"
+							/>
+							<button
+								className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50"
+								disabled={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)}
+								onClick={handleRequestAdvice}
+							>
+								Vraag behandeladvies aan
+							</button>
+						</div>
+						{adviceRequestSent && (
+							<p className="text-xs text-green-600">Aanvraag verstuurd. We nemen contact met je op via e-mail.</p>
+						)}
+					</div>
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">Jouw volgorde (1 = belangrijkste):</p>
-						<ol className="space-y-2">
+						<ol className="list-decimal pl-6 space-y-2">
 							{adviceRanking.map((key) => {
 								const option = ADVICE_OPTIONS.find((o) => o.key === key)!
 								return <li key={key} className="flex items-center"><span className="flex-1">{option.label}</span></li>
@@ -337,13 +385,14 @@ function App() {
 						<p className="text-lg font-semibold">{numAppointments ?? '-'}</p>
 					</div>
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
-						<p className="text-sm font-medium text-muted-foreground">Voorkeursbehandeling:</p>
-						<p className="text-lg font-semibold">
-							{preference === 'poh_ggz' && 'Face to face met POH GGZ'}
-							{preference === 'sport' && 'Sport en bewegen'}
-							{preference === 'group' && 'Groepsbijeenkomst lotgenoten'}
-							{preference === 'online' && 'Online apps en coaching'}
-						</p>
+						<p className="text-sm font-medium text-muted-foreground">Voorkeursbehandeling(en):</p>
+						<ul className="flex flex-wrap gap-2">
+							{preferences.length === 0 && <li className="text-sm text-muted-foreground">-</li>}
+							{preferences.includes('poh_ggz') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Face to face met POH GGZ</li>}
+							{preferences.includes('sport') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Sport en bewegen</li>}
+							{preferences.includes('group') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Groepsbijeenkomst lotgenoten</li>}
+							{preferences.includes('online') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Online apps en coaching</li>}
+						</ul>
 					</div>
 					<div className="flex justify-between gap-3 pt-2">
 						<div className="flex gap-2">

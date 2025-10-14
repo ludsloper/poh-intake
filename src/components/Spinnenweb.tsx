@@ -76,9 +76,9 @@ export default function Spinnenweb({
 	}, [answers])
 
 	const polygon = useMemo(() => {
-		const cx = 160
-		const cy = 160
-		const maxR = 120
+		const cx = 280
+		const cy = 280
+		const maxR = 220
 		const step = 360 / DOMAINS.length
 		const points = DOMAINS.map((d, i) => {
 			const angle = i * step
@@ -104,17 +104,25 @@ export default function Spinnenweb({
 						<span className="text-sm text-muted-foreground">Nog {remaining} te gaan</span>
 					</div>
 
-					<div className="rounded-xl border bg-card text-card-foreground shadow p-4 grid gap-4 content-start max-h-[70vh] overflow-auto">
-						{DOMAINS.map((domain) => (
-							<div key={domain} className="grid gap-2">
-								<h3 className="text-sm font-semibold">{domain}</h3>
+					<div className="rounded-xl border bg-card text-card-foreground shadow p-6 sm:p-8 grid gap-6 content-start max-h-[70vh] overflow-auto">
+						{DOMAINS.map((domain, idx) => (
+							<div key={domain} className={`${idx > 0 ? 'pt-6 mt-2 border-t' : ''} space-y-4`}>
+								<h3 className="text-base font-semibold">{domain}</h3>
 								{QUESTIONS.filter((q) => q.domain === domain).map((q) => {
-									const value = answers[q.id] ?? 5
+									const hasAnswer = Object.prototype.hasOwnProperty.call(answers, q.id)
+									const value = hasAnswer ? answers[q.id] : 5
 									return (
-										<label key={q.id} className="grid gap-1">
-											<span className="text-sm text-foreground/90">{q.text}</span>
-											<div className="flex items-center gap-3">
-												<span className="text-xs text-muted-foreground w-6 text-right">0</span>
+										<label key={q.id} className="space-y-2">
+											<span className="text-sm text-foreground/90 flex items-center gap-2">
+												{q.text}
+												{!hasAnswer && (
+													<span className="inline-flex items-center rounded-md bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200 px-2 py-0.5 text-[11px]">
+														Niet ingevuld
+													</span>
+												)}
+											</span>
+											<div className="flex items-center gap-4">
+												<span className="text-xs text-muted-foreground w-8 text-right">0</span>
 												<input
 													type="range"
 													min={0}
@@ -122,10 +130,10 @@ export default function Spinnenweb({
 													step={1}
 													value={value}
 													onChange={(e) => setAnswers((p) => ({ ...p, [q.id]: Number(e.target.value) }))}
-													className="accent-orange-500 flex-1"
+													className={`${hasAnswer ? 'accent-orange-500 opacity-100' : 'accent-zinc-300 opacity-70'} flex-1`}
 												/>
-												<span className="text-xs text-muted-foreground w-6">10</span>
-												<span className="text-xs font-medium tabular-nums w-6 text-right">{value}</span>
+												<span className="text-xs text-muted-foreground w-8">10</span>
+												<span className="text-xs font-medium tabular-nums w-8 text-right">{hasAnswer ? value : '—'}</span>
 											</div>
 										</label>
 									)
@@ -161,32 +169,48 @@ export default function Spinnenweb({
 						</div>
 					</div>
 
-					<div className="rounded-xl border bg-card text-card-foreground shadow p-4">
-						<svg viewBox="0 0 360 380" className="w-full h-auto">
+					<div className="rounded-xl border bg-card text-card-foreground shadow p-6 sm:p-8 max-w-2xl mx-auto">
+						<svg viewBox="0 0 560 560" className="w-full h-auto">
 							<defs>
 								<linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
 									<stop offset="0%" stopColor="#fb923c" stopOpacity="0.35" />
 									<stop offset="100%" stopColor="#fb923c" stopOpacity="0.15" />
 								</linearGradient>
 							</defs>
-							{[1, 2, 3, 4, 5].map((k) => (
-								<circle key={k} cx={polygon.cx} cy={polygon.cy} r={(k * polygon.maxR) / 5} className="fill-none stroke-foreground/10" />
-							))}
+						{[1, 2, 3, 4, 5].map((k) => (
+							<g key={k}>
+								<circle cx={polygon.cx} cy={polygon.cy} r={(k * polygon.maxR) / 5} className="fill-none stroke-foreground/10" />
+								<text x={polygon.cx} y={polygon.cy - (k * polygon.maxR) / 5 - 10} textAnchor="middle" className="fill-foreground/60 text-[10px]">{k * 2}</text>
+							</g>
+						))}
 							{DOMAINS.map((d, i) => {
 								const step = 360 / DOMAINS.length
 								const angle = i * step
-								const { x, y } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR, angle)
-								const { x: lx, y: ly } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR + 18, angle)
+							const { x, y } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR, angle)
+							const { x: lx, y: ly } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR + 28, angle)
 								return (
 									<g key={d}>
-										<line x1={polygon.cx} y1={polygon.cy} x2={x} y2={y} className="stroke-foreground/10" />
-										<text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle" className="fill-foreground text-[10px]">
+									<line x1={polygon.cx} y1={polygon.cy} x2={x} y2={y} className="stroke-foreground/10" />
+									<text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle" className="fill-foreground text-[12px]">
 											{d}
 										</text>
 									</g>
 								)
 							})}
-							<polygon points={polygon.points} className="stroke-orange-500 fill-[url(#fillGrad)]" />
+						<polygon points={polygon.points} className="stroke-orange-500 fill-[url(#fillGrad)]" />
+						{/* value points + tooltips */}
+						{DOMAINS.map((d, i) => {
+							const step = 360 / DOMAINS.length
+							const angle = i * step
+							const r = (domainScores[d] / 10) * polygon.maxR
+							const { x, y } = polarToCartesian(polygon.cx, polygon.cy, r, angle)
+							return (
+								<g key={`pt-${d}`}>
+									<title>{`${d}: ${domainScores[d]}`}</title>
+									<circle cx={x} cy={y} r={4} className="fill-orange-500 stroke-white/80" />
+								</g>
+							)
+						})}
 						</svg>
 						<div className="mt-3 text-xs text-muted-foreground">
 							<p>
