@@ -163,6 +163,9 @@ function App() {
 			{step === 'quiz' && (
 				<div className="space-y-4">
 					<h2 className="text-2xl font-semibold tracking-tight">Algemene vragen</h2>
+					{selectedTest !== '' && (
+						<p className="text-sm text-muted-foreground">Gekozen test: {selectedTest === '4dkl' ? '4DKL' : 'Spinnenweb'}</p>
+					)}
 
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">1. Welk advies is vooral op jou van toepassing?</p>
@@ -270,6 +273,10 @@ function App() {
 			{step === 'summary' && (
 				<div className="space-y-4">
 					<h2 className="text-2xl font-semibold tracking-tight">Samenvatting</h2>
+					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
+						<p className="text-sm font-medium text-muted-foreground">Gekozen test:</p>
+						<p className="text-lg font-semibold">{selectedTest === '4dkl' ? '4DKL' : selectedTest === 'spinnenweb' ? 'Spinnenweb' : '-'}</p>
+					</div>
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
 						<p className="text-sm font-medium text-muted-foreground">Jouw volgorde (1 = belangrijkste):</p>
 						<ol className="space-y-2">
