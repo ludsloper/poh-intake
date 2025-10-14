@@ -19,6 +19,10 @@ function App() {
 	const [contactEmail, setContactEmail] = useState<string>('')
 	const [contactNote, setContactNote] = useState<string>('')
 	const [adviceRequestSent, setAdviceRequestSent] = useState<boolean>(false)
+	const [quizErrors, setQuizErrors] = useState<string[]>([])
+	const [adviceErrors, setAdviceErrors] = useState<string[]>([])
+	const [quizAttempted, setQuizAttempted] = useState<boolean>(false)
+	const [adviceAttempted, setAdviceAttempted] = useState<boolean>(false)
 
     // advies-vraag verwijderd
 
@@ -133,7 +137,17 @@ function App() {
 				<div className="space-y-4">
 					<h2 className="text-2xl font-semibold tracking-tight">Algemene vragen</h2>
 					<p className="text-sm text-muted-foreground">Beantwoord eerst de algemene vragen. Daarna kun je (optioneel) het Spinnenweb invullen.</p>
-                <div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
+					{quizErrors.length > 0 && (
+						<div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+							<p className="font-medium">Vul de ontbrekende velden in:</p>
+							<ul className="list-disc pl-5 mt-1">
+								{quizErrors.map((e) => (
+									<li key={e}>{e}</li>
+								))}
+							</ul>
+						</div>
+					)}
+					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3 ${quizAttempted && numAppointments === null ? 'border-red-300' : ''}`}>
                     <p className="text-sm font-medium text-muted-foreground">1. Schat in hoeveel afspraken denk je nodig te hebben?</p>
 						<div className="grid grid-cols-9 gap-2">
 							{Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
@@ -146,16 +160,19 @@ function App() {
 										name="numAppointments"
 										value={n}
 										checked={numAppointments === n}
-										onChange={() => setNumAppointments(n)}
+										onChange={() => { setNumAppointments(n); setQuizErrors([]) }}
 										className="sr-only"
 									/>
 									<span>{n}</span>
 								</label>
 							))}
 						</div>
+						{quizAttempted && numAppointments === null && (
+							<p className="text-xs text-red-600">Dit veld is verplicht.</p>
+						)}
 					</div>
 
-					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3">
+					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3 ${quizAttempted && preferences.length === 0 ? 'border-red-300' : ''}`}>
                     <p className="text-sm font-medium text-muted-foreground">2. Welke behandeling(en) hebben jouw voorkeur?</p>
 						<div className="flex flex-col gap-2">
 							{[
@@ -177,9 +194,10 @@ function App() {
 											checked={checked}
 											onChange={(e) => {
 												const { checked } = e.target
-												setPreferences((prev) => (
+											setPreferences((prev) => (
 													checked ? Array.from(new Set([...prev, opt.key])) : prev.filter((k) => k !== opt.key)
 												))
+											setQuizErrors([])
 											}}
 											className="sr-only"
 										/>
@@ -188,6 +206,9 @@ function App() {
 								)
 							})}
 						</div>
+						{quizAttempted && preferences.length === 0 && (
+							<p className="text-xs text-red-600">Kies minimaal één optie.</p>
+						)}
 					</div>
 
 					<div className="flex justify-end gap-3 pt-2">
@@ -198,9 +219,21 @@ function App() {
 							Terug
 						</button>
 						<button
-							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50"
-							onClick={() => setStep('tests')}
-							disabled={!isQuizComplete}
+							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
+							onClick={() => {
+								if (isQuizComplete) {
+									setQuizErrors([])
+									setQuizAttempted(false)
+									setStep('tests')
+								} else {
+									const errs: string[] = []
+									if (numAppointments === null) errs.push('Schat het aantal afspraken')
+									if (preferences.length === 0) errs.push('Kies minimaal één voorkeursbehandeling')
+									setQuizErrors(errs)
+									setQuizAttempted(true)
+									window.scrollTo({ top: 0, behavior: 'smooth' })
+								}
+							}}
 						>
 							Verder naar Spinnenweb
 						</button>
@@ -212,6 +245,16 @@ function App() {
 				<div className="space-y-4">
 					<h2 className="text-2xl font-semibold tracking-tight">Samenvatting</h2>
 					<p className="text-xs text-muted-foreground">Let op: interpretaties zijn indicatief en vervangen geen diagnose.</p>
+					{adviceErrors.length > 0 && (
+						<div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+							<p className="font-medium">Vul de volgende gegevens in:</p>
+							<ul className="list-disc pl-5 mt-1">
+								{adviceErrors.map((e) => (
+									<li key={e}>{e}</li>
+								))}
+							</ul>
+						</div>
+					)}
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
 						<p className="text-sm font-medium text-muted-foreground">Spinnenweb (optioneel)</p>
 						<p className="text-lg font-semibold">{resultSpinnenweb ? 'Ingevuld' : '-'}</p>
@@ -244,49 +287,61 @@ function App() {
 				{/* Behandeladvies aanvragen - onderaan en als enige actieknop */}
 				<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-4">
 					<p className="text-sm font-medium text-muted-foreground">Vraag behandeladvies aan</p>
-					<div className="grid gap-3 sm:grid-cols-2">
+						<div className="grid gap-3 sm:grid-cols-2">
 						<div className="flex flex-col gap-1">
 							<label htmlFor="contactFirstName" className="text-xs font-medium text-muted-foreground">Voornaam</label>
-							<input
+								<input
 								id="contactFirstName"
 								type="text"
 								placeholder="Voornaam"
 								value={contactFirstName}
-								onChange={(e) => { setContactFirstName(e.target.value); setAdviceRequestSent(false) }}
-								className="rounded-md border bg-background px-3 py-2 text-sm"
+									onChange={(e) => { setContactFirstName(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && contactFirstName.trim().length < 2 ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
+								{adviceAttempted && contactFirstName.trim().length < 2 && (
+									<p className="text-xs text-red-600">Voornaam is verplicht.</p>
+								)}
 						</div>
 						<div className="flex flex-col gap-1">
 							<label htmlFor="contactLastName" className="text-xs font-medium text-muted-foreground">Achternaam</label>
-							<input
+								<input
 								id="contactLastName"
 								type="text"
 								placeholder="Achternaam"
 								value={contactLastName}
-								onChange={(e) => { setContactLastName(e.target.value); setAdviceRequestSent(false) }}
-								className="rounded-md border bg-background px-3 py-2 text-sm"
+									onChange={(e) => { setContactLastName(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && contactLastName.trim().length < 2 ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
+								{adviceAttempted && contactLastName.trim().length < 2 && (
+									<p className="text-xs text-red-600">Achternaam is verplicht.</p>
+								)}
 						</div>
 						<div className="flex flex-col gap-1">
 							<label htmlFor="contactDob" className="text-xs font-medium text-muted-foreground">Geboortedatum</label>
-							<input
+								<input
 								id="contactDob"
 								type="date"
 								value={contactDob}
-								onChange={(e) => { setContactDob(e.target.value); setAdviceRequestSent(false) }}
-								className="rounded-md border bg-background px-3 py-2 text-sm"
+									onChange={(e) => { setContactDob(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && !contactDob ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
+								{adviceAttempted && !contactDob && (
+									<p className="text-xs text-red-600">Geboortedatum is verplicht.</p>
+								)}
 						</div>
 						<div className="flex flex-col gap-1">
 							<label htmlFor="contactEmail" className="text-xs font-medium text-muted-foreground">E-mailadres</label>
-							<input
+								<input
 								id="contactEmail"
 								type="email"
 								placeholder="jouw@email.nl"
 								value={contactEmail}
-								onChange={(e) => { setContactEmail(e.target.value); setAdviceRequestSent(false) }}
-								className="rounded-md border bg-background px-3 py-2 text-sm"
+									onChange={(e) => { setContactEmail(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail) ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
+								{adviceAttempted && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail) && (
+									<p className="text-xs text-red-600">Vul een geldig e-mailadres in.</p>
+								)}
 						</div>
 					</div>
 					<div className="grid gap-2">
@@ -305,12 +360,26 @@ function App() {
 							const firstOk = contactFirstName.trim().length >= 2
 							const lastOk = contactLastName.trim().length >= 2
 							const dobOk = Boolean(contactDob)
-							const canSubmit = emailOk && firstOk && lastOk && dobOk
 							return (
 								<button
-									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50"
-									disabled={!canSubmit}
-									onClick={handleRequestAdvice}
+									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
+									onClick={() => {
+										const errs: string[] = []
+										if (!firstOk) errs.push('Voornaam is verplicht')
+										if (!lastOk) errs.push('Achternaam is verplicht')
+										if (!dobOk) errs.push('Geboortedatum is verplicht')
+										if (!emailOk) errs.push('E-mailadres is ongeldig of ontbreekt')
+										if (errs.length > 0) {
+											setAdviceErrors(errs)
+											setAdviceAttempted(true)
+											setAdviceRequestSent(false)
+											window.scrollTo({ top: 0, behavior: 'smooth' })
+											return
+										}
+										setAdviceErrors([])
+										setAdviceAttempted(false)
+										handleRequestAdvice()
+									}}
 								>
 									Vraag behandeladvies aan
 								</button>
