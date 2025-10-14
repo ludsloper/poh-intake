@@ -175,12 +175,12 @@ function App() {
 					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3 ${quizAttempted && preferences.length === 0 ? 'border-red-300' : ''}`}>
                     <p className="text-sm font-medium text-muted-foreground">2. Welke behandeling(en) hebben jouw voorkeur?</p>
 						<div className="flex flex-col gap-2">
-							{[
-								{ key: 'poh_ggz', label: 'Face to face met POH GGZ' },
-								{ key: 'sport', label: 'Sport en bewegen' },
-								{ key: 'group', label: '"Groepsbijeenkomst lotgenoten' },
-								{ key: 'online', label: 'Online apps en coaching' },
-							].map((opt) => {
+								{[
+									{ key: 'poh_ggz', label: 'Face to face met POH GGZ' },
+									{ key: 'sport', label: 'Sport en bewegen' },
+									{ key: 'group', label: 'Groepsbijeenkomst lotgenoten' },
+									{ key: 'online', label: 'Online apps en coaching' },
+								].map((opt) => {
 								const checked = preferences.includes(opt.key)
 								return (
 									<label

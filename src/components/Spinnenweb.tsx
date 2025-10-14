@@ -173,29 +173,45 @@ export default function Spinnenweb({
 									<stop offset="100%" stopColor="#fb923c" stopOpacity="0.15" />
 								</linearGradient>
 							</defs>
-						{[1, 2, 3, 4, 5].map((k) => (
+					{[1, 2, 3, 4, 5].map((k) => {
+						const r = (k * polygon.maxR) / 5
+						const step = 360 / DOMAINS.length
+						const ringPoints = DOMAINS.map((_, i) => {
+							const angle = i * step
+							const { x, y } = polarToCartesian(polygon.cx, polygon.cy, r, angle)
+							return `${x},${y}`
+						}).join(' ')
+						return (
 							<g key={k}>
-								<circle cx={polygon.cx} cy={polygon.cy} r={(k * polygon.maxR) / 5} className="fill-none stroke-foreground/10" />
-								<text x={polygon.cx} y={polygon.cy - (k * polygon.maxR) / 5 - 10} textAnchor="middle" className="fill-foreground/60 text-[10px]">{k * 2}</text>
+								<polygon points={ringPoints} className="fill-none stroke-foreground/30" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+								<text x={polygon.cx} y={polygon.cy - r - 10} textAnchor="middle" className="fill-foreground/60 text-[10px]">{k * 2}</text>
 							</g>
-						))}
-							{DOMAINS.map((d, i) => {
+						)
+					})}
+					{DOMAINS.map((d, i) => {
 								const step = 360 / DOMAINS.length
 								const angle = i * step
-							const { x, y } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR, angle)
-							const { x: lx, y: ly } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR + 28, angle)
+						const { x, y } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR, angle)
+						const { x: lx, y: ly } = polarToCartesian(polygon.cx, polygon.cy, polygon.maxR + 32, angle)
 								return (
 									<g key={d}>
 									<line x1={polygon.cx} y1={polygon.cy} x2={x} y2={y} className="stroke-foreground/10" />
-									<text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle" className="fill-foreground text-[12px]">
-											{d}
-										</text>
+								<text
+									x={lx}
+									y={ly}
+									textAnchor="middle"
+									dominantBaseline="middle"
+									className="fill-foreground text-[12px] font-medium"
+									style={{ paintOrder: 'stroke fill', stroke: 'white', strokeWidth: 3 }}
+								>
+									{d}
+								</text>
 									</g>
 								)
 							})}
 						<polygon points={polygon.points} className="stroke-orange-500 fill-[url(#fillGrad)]" />
 						{/* value points + tooltips */}
-						{DOMAINS.map((d, i) => {
+					{DOMAINS.map((d, i) => {
 							const step = 360 / DOMAINS.length
 							const angle = i * step
 							const r = (domainScores[d] / 10) * polygon.maxR
@@ -204,6 +220,22 @@ export default function Spinnenweb({
 								<g key={`pt-${d}`}>
 									<title>{`${d}: ${domainScores[d]}`}</title>
 									<circle cx={x} cy={y} r={4} className="fill-orange-500 stroke-white/80" />
+								{(() => {
+									const labelR = r + 20
+									const { x: tx, y: ty } = polarToCartesian(polygon.cx, polygon.cy, labelR, angle)
+									return (
+										<text
+											x={tx}
+											y={ty}
+											textAnchor="middle"
+											dominantBaseline="middle"
+											className="fill-orange-700 text-[11px] font-semibold"
+											style={{ paintOrder: 'stroke fill', stroke: 'white', strokeWidth: 3 }}
+										>
+											{domainScores[d]}
+										</text>
+									)
+								})()}
 								</g>
 							)
 						})}
