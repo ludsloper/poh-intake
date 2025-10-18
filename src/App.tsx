@@ -78,8 +78,8 @@ function App() {
 
 			{step === 'tests' && (
 				<div className="space-y-5">
-					<h2 className="text-2xl font-semibold tracking-tight">Spinnenweb (optioneel)</h2>
-					<p className="text-muted-foreground">Vul het Spinnenweb in (optioneel) of afronden.</p>
+					<h2 className="text-2xl font-semibold tracking-tight">Vragenlijst: Het Spinnenweb (Optioneel)</h2>
+					<p className="text-muted-foreground">Vul de vragenlijst in of ga naar afronden.</p>
 					<div className="grid gap-4">
                         <div className="rounded-xl border bg-card text-card-foreground shadow p-5 flex flex-col gap-3">
 							<div className="flex items-start justify-between gap-2">
@@ -90,7 +90,7 @@ function App() {
 								<span className="inline-flex h-8 items-center rounded-full bg-orange-100 text-orange-700 px-3 text-xs font-medium dark:bg-orange-900/40 dark:text-orange-200">Reflectie</span>
 							</div>
 							<ul className="text-sm list-disc pl-5 space-y-1 text-foreground/90">
-								<li>Visueel spinnenweb over: lichamelijk, mentaal, zingeving, kwaliteit van leven, meedoen, dagelijks functioneren</li>
+								<li>Is een onderzoek naar jouw mentaal welbevinden</li>
 								<li>Helpt bij inzicht en gesprek over wat voor jou belangrijk is</li>
 							</ul>
 							<div className="mt-auto flex justify-between items-center">
@@ -178,7 +178,7 @@ function App() {
 								{[
 									{ key: 'poh_ggz', label: 'Face to face met POH GGZ' },
 									{ key: 'sport', label: 'Sport en bewegen' },
-									{ key: 'group', label: 'Groepsbijeenkomst lotgenoten' },
+									{ key: 'group', label: 'Groepsbijeenkomst' },
 									{ key: 'online', label: 'Online apps en coaching' },
 								].map((opt) => {
 								const checked = preferences.includes(opt.key)

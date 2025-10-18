@@ -104,7 +104,7 @@ export default function Spinnenweb({
 						<span className="text-sm text-muted-foreground">Nog {remaining} te gaan</span>
 					</div>
 
-					<div className="rounded-xl border bg-card text-card-foreground shadow p-6 sm:p-8 grid gap-6 content-start max-h-[70vh] overflow-auto">
+					<div className="rounded-xl border bg-card text-card-foreground shadow p-6 sm:p-8 grid gap-6 content-start">
 						{DOMAINS.map((domain, idx) => (
 							<div key={domain} className={`${idx > 0 ? 'pt-6 mt-2 border-t' : ''} space-y-4`}>
 								<h3 className="text-base font-semibold">{domain}</h3>
