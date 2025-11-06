@@ -18,9 +18,10 @@ void i18n
     ns: ['common'],
     supportedLngs: ['nl', 'en'],
     fallbackLng: 'nl',
+    lng: 'nl', // Force default language to Dutch
     detection: {
-      // Use URL param first, then stored preference, then browser
-      order: ['querystring', 'localStorage', 'navigator', 'htmlTag', 'cookie'],
+      // Use stored preference first, then URL param, fallback to Dutch
+      order: ['localStorage', 'querystring'],
       caches: ['localStorage'],
     },
     interpolation: { escapeValue: false },

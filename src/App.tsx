@@ -13,6 +13,12 @@ type Step = 'landing' | 'tests' | 'quiz' | 'summary' | 'success'
 function App() {
 	const { t, i18n } = useTranslation()
 	const [step, setStep] = useState<Step>('landing')
+	
+	// Helper function to change step and scroll to top
+	const changeStep = (newStep: Step) => {
+		setStep(newStep)
+		window.scrollTo({ top: 0, behavior: 'smooth' })
+	}
 	const [numAppointments, setNumAppointments] = useState<number | null>(null)
     const [preferences, setPreferences] = useState<string[]>([])
 	const [selectedTest, setSelectedTest] = useState<'spinnenweb' | ''>('')
@@ -57,7 +63,7 @@ function App() {
 			})
 
 			if (result.success) {
-				setStep('success')
+				changeStep('success')
 			} else {
 				setAdviceErrors(['advice.errors.sendFailed'])
 			}
@@ -68,37 +74,37 @@ function App() {
 			setIsSubmitting(false)
 		}
 	}	return (
-		<div className="min-h-screen bg-linear-to-b from-orange-50/80 via-amber-50/50 to-orange-50/30 py-8">
-			<div className="max-w-3xl mx-auto p-6 sm:p-8 space-y-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-100">
+		<div className="min-h-screen bg-gray-50 md:bg-linear-to-b md:from-orange-100/80 md:via-amber-100/50 md:to-orange-100/30 py-0 md:py-8 px-0 sm:px-0">
+			<div className="max-w-3xl mx-auto p-5 sm:p-6 md:p-8 space-y-5 sm:space-y-6 bg-white md:bg-white/80 dark:bg-gray-900 md:dark:bg-gray-900/80 backdrop-blur-sm rounded-none md:rounded-2xl shadow-none md:shadow-lg border-0 md:border md:border-orange-100">
 				{/* Logo header - visible on all steps */}
-				<div className="flex items-center justify-between gap-3 pb-6 border-b border-orange-200/50 mb-2">
-					<div className="flex items-center gap-3">
+				<div className="flex items-center justify-between gap-2 sm:gap-3 pb-4 sm:pb-6 border-b border-orange-200/50 mb-2">
+					<div className="flex items-center gap-2 sm:gap-3">
 						<img 
 							src="/kruis.png" 
 							alt={t('app.logoAlt')} 
-							className="h-16 w-auto rounded-4xl"
+							className="h-12 sm:h-16 w-auto rounded-4xl"
 						/>
 						<div className="flex flex-col">
-							<span className="text-2xl font-medium"><span className="text-gray-500">student</span><span className="text-orange-500">arts</span></span>
+							<span className="text-xl sm:text-2xl font-medium"><span className="text-gray-500">student</span><span className="text-orange-500">arts</span></span>
 						</div>
 					</div>
 					<LanguageSwitcher />
 				</div>
 
 			{step === 'landing' && (
-				<div className="space-y-4">
-					<h1 className="text-4xl font-semibold tracking-tight text-gray-800 dark:text-gray-100">{t('landing.header')}</h1>
-					<h2 className="text-xl font-medium tracking-tight text-gray-700 dark:text-gray-200">{t('landing.title')}</h2>
-					<ol className="list-decimal pl-6 space-y-1">
-						<li>{t('landing.step1')}</li>
-						<li>{t('landing.step2')}</li>
+				<div className="space-y-4 sm:space-y-5">
+					<h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-gray-800 dark:text-gray-100 leading-tight">{t('landing.header')}</h1>
+					<h2 className="text-lg sm:text-xl font-medium tracking-tight text-gray-700 dark:text-gray-200 mt-2">{t('landing.title')}</h2>
+					<ol className="list-decimal pl-5 sm:pl-6 space-y-2.5 text-base sm:text-base leading-relaxed">
+						<li className="pl-1">{t('landing.step1')}</li>
+						<li className="pl-1">{t('landing.step2')}</li>
 
 					</ol>
-					<p className="leading-relaxed text-foreground/90">{t('landing.paragraph')}</p>
-					<div className="flex justify-end gap-3 pt-2">
+					<p className="leading-relaxed text-foreground/90 text-base sm:text-base">{t('landing.paragraph')}</p>
+					<div className="flex justify-stretch sm:justify-end gap-3 pt-3">
 						<button
-							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
-							onClick={() => setStep('quiz')}
+							className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 px-6 py-3 text-base font-medium shadow-sm"
+							onClick={() => changeStep('quiz')}
 						>
 							{t('actions.start')}
 						</button>
@@ -107,9 +113,9 @@ function App() {
 			)}
 
 			{step === 'tests' && (
-				<div className="space-y-5">
-					<h2 className="text-2xl font-semibold tracking-tight">{t('tests.title')}</h2>
-					<p className="text-muted-foreground">{t('tests.subtitle')}</p>
+				<div className="space-y-5 sm:space-y-5">
+					<h2 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight">{t('tests.title')}</h2>
+					<p className="text-muted-foreground text-base sm:text-base leading-relaxed">{t('tests.subtitle')}</p>
 					<div className="grid gap-4">
                         <div className="rounded-xl border bg-card text-card-foreground shadow p-5 flex flex-col gap-3">
 							<div className="flex items-start justify-between gap-2">
@@ -134,23 +140,23 @@ function App() {
 								)}
 								<button
 									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
-									onClick={() => { setSelectedTest('spinnenweb'); setStep('quiz') }}
+									onClick={() => { setSelectedTest('spinnenweb'); changeStep('quiz') }}
 								>
 									{resultSpinnenweb ? t('actions.changeSpinnenweb') : t('actions.startSpinnenweb')}
 								</button>
 							</div>
 						</div>
 					</div>
-					<div className="flex justify-between pt-2">
+					<div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2">
 						<button
-							className="inline-flex items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
-							onClick={() => setStep('landing')}
+							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 active:bg-orange-100"
+							onClick={() => changeStep('landing')}
 						>
 							{t('actions.back')}
 						</button>
 						<button
-							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
-							onClick={() => setStep('summary')}
+							className="inline-flex items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 px-5 py-2.5 text-base font-medium shadow-sm"
+							onClick={() => changeStep('summary')}
 						>
 							{resultSpinnenweb ? t('actions.requestAdvice') : t('actions.finish')}
 						</button>
@@ -162,11 +168,11 @@ function App() {
 
 			{step === 'quiz' && selectedTest === 'spinnenweb' && (
 				<Spinnenweb
-					onBack={() => setStep('tests')}
+					onBack={() => changeStep('tests')}
 					onComplete={(res, answers) => {
 						setResultSpinnenweb(res)
 						setSpinnenwebAnswers(answers)
-						setStep('tests')
+						changeStep('tests')
 					}}
 					onChartReady={(pdfBlob) => {
 						setSpinnenwebPdfBlob(pdfBlob)
@@ -177,9 +183,9 @@ function App() {
 			)}
 
             {step === 'quiz' && selectedTest === '' && (
-				<div className="space-y-4">
-					<h2 className="text-2xl font-semibold tracking-tight">{t('quiz.generalTitle')}</h2>
-					<p className="text-sm text-muted-foreground">{t('quiz.generalSubtitle')}</p>
+				<div className="space-y-4 sm:space-y-5">
+					<h2 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight">{t('quiz.generalTitle')}</h2>
+					<p className="text-base text-muted-foreground leading-relaxed">{t('quiz.generalSubtitle')}</p>
 					{quizErrors.length > 0 && (
 						<div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
 							<p className="font-medium">{t('quiz.errorsHeading')}</p>
@@ -190,13 +196,13 @@ function App() {
 							</ul>
 						</div>
 					)}
-					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3 ${quizAttempted && numAppointments === null ? 'border-red-300' : ''}`}>
-                    <p className="text-sm font-medium text-muted-foreground">{t('quiz.q1Label')}</p>
-						<div className="grid grid-cols-9 gap-2">
+					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 sm:p-5 space-y-3 ${quizAttempted && numAppointments === null ? 'border-red-300' : ''}`}>
+                    <p className="text-base font-medium text-muted-foreground">{t('quiz.q1Label')}</p>
+						<div className="grid grid-cols-5 sm:grid-cols-9 gap-2.5">
 							{Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
 								<label
 									key={n}
-									className={`${numAppointments === n ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium`}
+									className={`${numAppointments === n ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} inline-flex items-center justify-center gap-2 rounded-lg border px-3 sm:px-3 py-3 text-base font-medium cursor-pointer`}
 								>
 									<input
 										type="radio"
@@ -215,9 +221,9 @@ function App() {
 						)}
 					</div>
 
-					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3 ${quizAttempted && preferences.length === 0 ? 'border-red-300' : ''}`}>
-                    <p className="text-sm font-medium text-muted-foreground">{t('quiz.q2Label')}</p>
-						<div className="flex flex-col gap-2">
+					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 sm:p-5 space-y-3 ${quizAttempted && preferences.length === 0 ? 'border-red-300' : ''}`}>
+                    <p className="text-base font-medium text-muted-foreground">{t('quiz.q2Label')}</p>
+						<div className="flex flex-col gap-2.5">
 								{[
 									{ key: 'poh_ggz', labelKey: 'quiz.preferences.poh_ggz' },
 									{ key: 'sport', labelKey: 'quiz.preferences.sport' },
@@ -228,7 +234,7 @@ function App() {
 								return (
 									<label
 										key={opt.key}
-										className={`${checked ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} flex items-center gap-2 rounded-md border px-3 py-2`}
+										className={`${checked ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} flex items-center gap-3 rounded-lg border px-4 py-3.5 text-base sm:text-base cursor-pointer`}
 									>
 										<input
 											type="checkbox"
@@ -254,20 +260,20 @@ function App() {
 						)}
 					</div>
 
-					<div className="flex justify-end gap-3 pt-2">
+					<div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-3">
 						<button
-							className="inline-flex items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
-							onClick={() => setStep('landing')}
+							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 active:bg-orange-100"
+							onClick={() => changeStep('landing')}
 						>
 							{t('actions.back')}
 						</button>
 						<button
-							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
+							className="inline-flex items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 px-5 py-2.5 text-base font-medium shadow-sm"
 							onClick={() => {
 								if (isQuizComplete) {
 									setQuizErrors([])
 									setQuizAttempted(false)
-									setStep('tests')
+									changeStep('tests')
 								} else {
 									const errs: string[] = []
 									if (numAppointments === null) errs.push('quiz.errors.numAppointments')
@@ -285,9 +291,9 @@ function App() {
 			)}
 
 			{step === 'summary' && (
-				<div className="space-y-4">
-					<h2 className="text-2xl font-semibold tracking-tight">{t('summary.title')}</h2>
-					<p className="text-xs text-muted-foreground">{t('summary.disclaimer')}</p>
+				<div className="space-y-4 sm:space-y-5">
+					<h2 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight">{t('summary.title')}</h2>
+					<p className="text-sm text-muted-foreground leading-relaxed">{t('summary.disclaimer')}</p>
 					{adviceErrors.length > 0 && (
 						<div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
 							<p className="font-medium">{t('summary.fillFieldsHeading')}</p>
@@ -336,7 +342,7 @@ function App() {
 					</div>
 
 				{/* Behandeladvies aanvragen - onderaan en als enige actieknop */}
-				<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-4">
+				<div className="rounded-xl border bg-card text-card-foreground shadow p-4 sm:p-5 space-y-4">
 					<p className="text-sm font-medium text-muted-foreground">{t('advice.sectionTitle')}</p>
 						<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 						<div className="flex flex-col gap-1">
@@ -422,10 +428,10 @@ function App() {
 						/>
 						<p className="text-xs text-muted-foreground">{t('advice.noteHelpText')}</p>
 					</div>
-					<div className="flex justify-between items-center">
+					<div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2">
 						<button
-							className="inline-flex items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
-							onClick={() => setStep('tests')}
+							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 active:bg-orange-100"
+							onClick={() => changeStep('tests')}
 						>
 							{t('actions.back')}
 						</button>
@@ -436,7 +442,7 @@ function App() {
 							const dobOk = Boolean(contactDob)
 							return (
 								<button
-									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50 disabled:cursor-not-allowed"
+									className="inline-flex items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 px-5 py-3 text-base font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
 									disabled={isSubmitting}
 									onClick={() => {
 										const errs: string[] = []
@@ -475,8 +481,8 @@ function App() {
 			)}
 
 			{step === 'success' && (
-				<div className="space-y-4">
-					<div className="rounded-xl border bg-linear-to-br from-green-50/50 to-emerald-50/50 border-green-200/50 p-8 space-y-4">
+				<div className="space-y-4 sm:space-y-5">
+					<div className="rounded-xl border bg-linear-to-br from-green-50/50 to-emerald-50/50 border-green-200/50 p-6 sm:p-8 space-y-5">
 						<div className="flex items-center justify-center gap-3">
 							<div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
 								<svg className="h-7 w-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -486,7 +492,7 @@ function App() {
 						</div>
 						
 						<div className="space-y-2 text-center">
-							<h2 className="text-2xl font-semibold tracking-tight text-gray-800">{t('advice.modal.sentTitle')}</h2>
+							<h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-gray-800">{t('advice.modal.sentTitle')}</h2>
 							<p className="text-sm text-muted-foreground">{t('advice.modal.sentText')}</p>
 						</div>
 					</div>
