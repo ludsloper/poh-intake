@@ -88,7 +88,7 @@ export default function Spinnenweb({
 	const [answers, setAnswers] = useState<Record<string, number>>(initialAnswers || {})
 	const internalChartRef = useRef<HTMLDivElement>(null)
 	const chartRef = externalChartRef || internalChartRef
-	const [isDownloading, setIsDownloading] = useState(false)
+	// const [isDownloading, setIsDownloading] = useState(false)
 	const totalQuestions = QUESTIONS.length
 	const answeredCount = Object.keys(answers).length
 	const progressPct = totalQuestions ? Math.round((answeredCount / totalQuestions) * 100) : 0
@@ -202,76 +202,76 @@ export default function Spinnenweb({
 		}
 	}, [view, canSubmit, onChartReady, chartRef])
 
-	const handleDownloadPDF = async () => {
-		if (!chartRef.current) return
+	// const handleDownloadPDF = async () => {
+	// 	if (!chartRef.current) return
 		
-		setIsDownloading(true)
-		try {
-			const target = chartRef.current
-			const bounds = target.getBoundingClientRect()
-			const width = Math.ceil(bounds.width)
-			const height = Math.ceil(bounds.height)
+	// 	setIsDownloading(true)
+	// 	try {
+	// 		const target = chartRef.current
+	// 		const bounds = target.getBoundingClientRect()
+	// 		const width = Math.ceil(bounds.width)
+	// 		const height = Math.ceil(bounds.height)
 
-			const dataUrl = await toPng(target, {
-				cacheBust: true,
-				backgroundColor: '#ffffff',
-				pixelRatio: Math.max(3, window.devicePixelRatio || 1),
-				canvasWidth: width + 48,
-				canvasHeight: height + 48,
-				style: {
-					padding: '24px',
-					backgroundColor: '#ffffff',
-					width: `${width}px`,
-					height: `${height}px`,
-					border: 'none',
-					boxShadow: 'none',
-					outline: 'none',
-				},
-			})
+	// 		const dataUrl = await toPng(target, {
+	// 			cacheBust: true,
+	// 			backgroundColor: '#ffffff',
+	// 			pixelRatio: Math.max(3, window.devicePixelRatio || 1),
+	// 			canvasWidth: width + 48,
+	// 			canvasHeight: height + 48,
+	// 			style: {
+	// 				padding: '24px',
+	// 				backgroundColor: '#ffffff',
+	// 				width: `${width}px`,
+	// 				height: `${height}px`,
+	// 				border: 'none',
+	// 				boxShadow: 'none',
+	// 				outline: 'none',
+	// 			},
+	// 		})
 
-			const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-				const img = new Image()
-				img.onload = () => resolve(img)
-				img.onerror = (err) => reject(err)
-				img.src = dataUrl
-			})
+	// 		const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+	// 			const img = new Image()
+	// 			img.onload = () => resolve(img)
+	// 			img.onerror = (err) => reject(err)
+	// 			img.src = dataUrl
+	// 		})
 
-			const pdf = new jsPDF({
-				orientation: 'portrait',
-				unit: 'mm',
-				format: 'a4',
-			})
+	// 		const pdf = new jsPDF({
+	// 			orientation: 'portrait',
+	// 			unit: 'mm',
+	// 			format: 'a4',
+	// 		})
 
-			const pageWidth = pdf.internal.pageSize.getWidth()
-			const pageHeight = pdf.internal.pageSize.getHeight()
-			const margin = 20
-			const maxWidth = pageWidth - margin * 2
-			const maxHeight = pageHeight - margin * 2
-			const scale = Math.min(maxWidth / image.width, maxHeight / image.height, 1)
-			const safety = 0.9
-			const renderWidth = image.width * scale * safety
-			const renderHeight = image.height * scale * safety
-			const x = (pageWidth - renderWidth) / 2
-			const y = (pageHeight - renderHeight) / 2
+	// 		const pageWidth = pdf.internal.pageSize.getWidth()
+	// 		const pageHeight = pdf.internal.pageSize.getHeight()
+	// 		const margin = 20
+	// 		const maxWidth = pageWidth - margin * 2
+	// 		const maxHeight = pageHeight - margin * 2
+	// 		const scale = Math.min(maxWidth / image.width, maxHeight / image.height, 1)
+	// 		const safety = 0.9
+	// 		const renderWidth = image.width * scale * safety
+	// 		const renderHeight = image.height * scale * safety
+	// 		const x = (pageWidth - renderWidth) / 2
+	// 		const y = (pageHeight - renderHeight) / 2
 
-			// Draw the image
-			pdf.addImage(image, 'PNG', x, y, renderWidth, renderHeight, undefined, 'FAST')
+	// 		// Draw the image
+	// 		pdf.addImage(image, 'PNG', x, y, renderWidth, renderHeight, undefined, 'FAST')
 
-			// Explicit border to avoid any clipped DOM border in export
-			pdf.setDrawColor(226, 232, 240) // slate-200-ish
-			pdf.setLineWidth(0.4)
-			const inset = 0.6
-			const radius = 3
-			// roundedRect: x, y, w, h, rx, ry, style ('S' stroke)
-			// ensure border is inside the image area
-			pdf.roundedRect(x + inset, y + inset, renderWidth - inset * 2, renderHeight - inset * 2, radius, radius, 'S')
-			pdf.save(t('spinnenweb.pdfFileName'))
-		} catch (error) {
-			console.error('Error generating PDF:', error)
-		} finally {
-			setIsDownloading(false)
-		}
-	}
+	// 		// Explicit border to avoid any clipped DOM border in export
+	// 		pdf.setDrawColor(226, 232, 240) // slate-200-ish
+	// 		pdf.setLineWidth(0.4)
+	// 		const inset = 0.6
+	// 		const radius = 3
+	// 		// roundedRect: x, y, w, h, rx, ry, style ('S' stroke)
+	// 		// ensure border is inside the image area
+	// 		pdf.roundedRect(x + inset, y + inset, renderWidth - inset * 2, renderHeight - inset * 2, radius, radius, 'S')
+	// 		pdf.save(t('spinnenweb.pdfFileName'))
+	// 	} catch (error) {
+	// 		console.error('Error generating PDF:', error)
+	// 	} finally {
+	// 		setIsDownloading(false)
+	// 	}
+	// }
 
 	return (
 		<div className="space-y-4">
