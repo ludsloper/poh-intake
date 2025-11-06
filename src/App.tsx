@@ -155,10 +155,14 @@ function App() {
 							{t('actions.back')}
 						</button>
 						<button
-							className="inline-flex items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 px-5 py-2.5 text-base font-medium shadow-sm"
+							className={`inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-base font-medium shadow-sm ${
+								resultSpinnenweb 
+									? 'bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700' 
+									: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700'
+							}`}
 							onClick={() => changeStep('summary')}
 						>
-							{resultSpinnenweb ? t('actions.requestAdvice') : t('actions.finish')}
+							{resultSpinnenweb ? t('actions.requestAdvice') : t('actions.finishDirectly')}
 						</button>
 					</div>
 				</div>
