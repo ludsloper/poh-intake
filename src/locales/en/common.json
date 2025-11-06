@@ -1,0 +1,151 @@
+{
+    "actions": {
+        "start": "Start",
+        "back": "Back",
+        "changeSpinnenweb": "Edit Spiderweb",
+        "startSpinnenweb": "Start Spiderweb",
+        "finish": "Finish",
+        "nextToSpinnenweb": "Continue to Spiderweb",
+        "requestAdvice": "Request treatment advice",
+        "close": "Close",
+        "sending": "Sending..."
+    },
+    "status": {
+        "completed": "Completed"
+    },
+    "badges": {
+        "reflection": "Reflection"
+    },
+    "app": {
+        "logoAlt": "StudentArts Logo"
+    },
+    "landing": {
+        "header": "Mental health support",
+        "title": "How to use our help responsibly?",
+        "step1": "Complete the questionnaire. You'll immediately receive a personal report with your test results.",
+        "step2": "Our GP or POH‑GGZ screens your answers. You'll quickly hear whether, and how, you qualify for a care pathway.",
+        "paragraph": "Are you looking for more specialized psychological care or are you already in treatment? Then contact a psychology practice directly. Also consider whether online psychological support suits you; it's often as effective as face-to-face contact."
+    },
+    "tests": {
+        "title": "Questionnaire: The Spiderweb (Optional)",
+        "subtitle": "Fill in the questionnaire or proceed to finish.",
+        "card": {
+            "title": "Spiderweb (Positive Health)",
+            "subtitle": "Self-scan across 6 life domains",
+            "bullet1": "Explores your mental well-being",
+            "bullet2": "Helps with insight and conversation about what matters to you"
+        }
+    },
+    "quiz": {
+        "generalTitle": "General questions",
+        "generalSubtitle": "Answer the general questions first. Afterwards you can optionally complete the Spiderweb.",
+        "errorsHeading": "Please fill in the missing fields:",
+        "errors": {
+            "numAppointments": "Estimate the number of appointments",
+            "preferences": "Select at least one preferred treatment"
+        },
+        "q1Label": "1. Estimate how many appointments you think you'll need?",
+        "q1Required": "This field is required.",
+        "q2Label": "2. Which treatment(s) do you prefer?",
+        "q2Required": "Choose at least one option.",
+        "preferences": {
+            "poh_ggz": "Face to face with POH GGZ",
+            "sport": "Sports and exercise",
+            "group": "Group session",
+            "online": "Online apps and coaching"
+        }
+    },
+    "summary": {
+        "title": "Summary",
+        "disclaimer": "Note: interpretations are indicative and do not replace a diagnosis.",
+        "fillFieldsHeading": "Please provide the following details:",
+        "spinnenwebOptional": "Spiderweb (optional)",
+        "spinnenwebScores": "Spiderweb scores:",
+        "estimatedAppointments": "Estimated number of appointments:",
+        "preferredTreatments": "Preferred treatment(s):"
+    },
+    "advice": {
+        "sectionTitle": "Request treatment advice",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "dob": "Date of birth",
+        "email": "Email address",
+        "emailConfirm": "Confirm email address",
+        "errors": {
+            "firstRequired": "First name is required",
+            "lastRequired": "Last name is required",
+            "dobRequired": "Date of birth is required",
+            "emailInvalid": "Enter a valid email address.",
+            "emailListInvalid": "Email address is invalid or missing",
+            "emailsMismatch": "Email addresses don't match.",
+            "emailConfirmMissing": "Please confirm your email address.",
+            "sendFailed": "An error occurred while sending. Please try again later."
+        },
+        "notePlaceholder": "Notes (optional)",
+        "noteHelpText": "Enter your name, date of birth and email so we can link your request correctly.",
+        "modal": {
+            "sentTitle": "Request sent",
+            "sentText": "We'll contact you by email soon.",
+            "successMessage": "We have received your request and will review it as soon as possible.",
+            "successConfirmation": "Request successfully sent"
+        }
+    },
+    "misc": {
+        "dash": "-"
+    },
+    "spinnenweb": {
+        "title": "Spiderweb (Positive Health)",
+        "intro": "Answer the questions for each domain (0–10). We’ll then show your spiderweb.",
+        "scaleLegend": "Scale: 0 = not at all, 10 = very much",
+        "remaining": "Remaining: {{count}}",
+        "quickFill": "Quick fill (random)",
+        "progress": "{{answered}}/{{total}} filled",
+        "viewChart": "View spiderweb",
+        "back": "Back",
+        "chartTitle": "Your Spiderweb",
+        "complete": "Complete",
+        "averages": "Average scores (0–10) per domain, based on your answers.",
+        "downloading": "Working...",
+        "downloadPdf": "Download PDF",
+        "pdfFileName": "spiderweb-positive-health.pdf",
+        "highestDomains": "Highest domains",
+        "answerToSee": "Answer the questions first to see your results.",
+        "focusDomains": "Domains to explore",
+        "allBalanced": "All domains are currently in balance.",
+        "scoreOverview": "Score Overview",
+        "explainer": "This spiderweb shows your average score (0–10) per domain. It is intended as a reflection aid and not a diagnosis. Discuss your profile with a professional for context and next steps.",
+        "congratsTitle": "Congrats! You’ve completed the spiderweb.",
+        "congratsText": "All questions are answered and your personal spiderweb is ready.",
+        "backToQuestions": "Back to questions",
+        "finish": "Finish",
+        "filled": "Filled",
+        "domains": {
+            "Lichamelijk": "Physical",
+            "Mentaal": "Mental",
+            "Zingeving": "Purpose",
+            "Kwaliteit van leven": "Quality of life",
+            "Meedoen": "Participation",
+            "Dagelijks functioneren": "Daily functioning"
+        },
+        "questions": {
+            "lich-1": "I feel physically fit.",
+            "lich-2": "I sleep enough and recover well.",
+            "lich-3": "I have enough energy for daily activities.",
+            "ment-1": "I can cope well with stress.",
+            "ment-2": "I feel positive and resilient.",
+            "ment-3": "I experience little worrying.",
+            "zing-1": "I have a clear sense of direction.",
+            "zing-2": "My activities feel meaningful.",
+            "zing-3": "I live according to my values.",
+            "kvl-1": "I am satisfied with my life.",
+            "kvl-2": "I enjoy everyday things.",
+            "kvl-3": "My life feels balanced.",
+            "mdn-1": "I have support from my social environment.",
+            "mdn-2": "I feel part of a community.",
+            "mdn-3": "I can take part in activities that matter to me.",
+            "dfn-1": "I can carry out daily tasks as I want.",
+            "dfn-2": "I manage my work/studies well.",
+            "dfn-3": "I can organize my time effectively."
+        }
+    }
+}

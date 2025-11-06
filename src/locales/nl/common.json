@@ -1,0 +1,151 @@
+{
+    "actions": {
+        "start": "Start",
+        "back": "Terug",
+        "changeSpinnenweb": "Wijzig Spinnenweb",
+        "startSpinnenweb": "Start Spinnenweb",
+        "finish": "Afronden",
+        "nextToSpinnenweb": "Verder naar Spinnenweb",
+        "requestAdvice": "Vraag behandeladvies aan",
+        "close": "Sluiten",
+        "sending": "Versturen..."
+    },
+    "status": {
+        "completed": "Voltooid"
+    },
+    "badges": {
+        "reflection": "Reflectie"
+    },
+    "app": {
+        "logoAlt": "StudentArts Logo"
+    },
+    "landing": {
+        "header": "Mentale hulp",
+        "title": "Hoe schakel je onze hulp verantwoord in?",
+        "step1": "Vul de vragenlijst in. Je ontvangt direct een persoonlijk rapport met je testuitslagen.",
+        "step2": "Onze huisarts of POH‑GGZ screent je antwoorden. Je hoort snel of, en op welke manier, je in aanmerking komt voor een hulpverleningstraject.",
+        "paragraph": "Zoek je meer gespecialiseerde psychologische zorg of ben je al in behandeling? Neem dan rechtstreeks contact op met een psychologenpraktijk. Bekijk ook of online psychologische hulp bij je past; dit is vaak even effectief als face-to-face contact."
+    },
+    "tests": {
+        "title": "Vragenlijst: Het Spinnenweb (Optioneel)",
+        "subtitle": "Vul de vragenlijst in of ga naar afronden.",
+        "card": {
+            "title": "Spinnenweb (Positieve Gezondheid)",
+            "subtitle": "Zelfscan over 6 levensdomeinen",
+            "bullet1": "Is een onderzoek naar jouw mentaal welbevinden",
+            "bullet2": "Helpt bij inzicht en gesprek over wat voor jou belangrijk is"
+        }
+    },
+    "quiz": {
+        "generalTitle": "Algemene vragen",
+        "generalSubtitle": "Beantwoord eerst de algemene vragen. Daarna kun je (optioneel) het Spinnenweb invullen.",
+        "errorsHeading": "Vul de ontbrekende velden in:",
+        "errors": {
+            "numAppointments": "Schat het aantal afspraken",
+            "preferences": "Kies minimaal één voorkeursbehandeling"
+        },
+        "q1Label": "1. Schat in hoeveel afspraken denk je nodig te hebben?",
+        "q1Required": "Dit veld is verplicht.",
+        "q2Label": "2. Welke behandeling(en) hebben jouw voorkeur?",
+        "q2Required": "Kies minimaal één optie.",
+        "preferences": {
+            "poh_ggz": "Face to face met POH GGZ",
+            "sport": "Sport en bewegen",
+            "group": "Groepsbijeenkomst",
+            "online": "Online apps en coaching"
+        }
+    },
+    "summary": {
+        "title": "Samenvatting",
+        "disclaimer": "Let op: interpretaties zijn indicatief en vervangen geen diagnose.",
+        "fillFieldsHeading": "Vul de volgende gegevens in:",
+        "spinnenwebOptional": "Spinnenweb (optioneel)",
+        "spinnenwebScores": "Spinnenweb scores:",
+        "estimatedAppointments": "Geschat aantal afspraken:",
+        "preferredTreatments": "Voorkeursbehandeling(en):"
+    },
+    "advice": {
+        "sectionTitle": "Vraag behandeladvies aan",
+        "firstName": "Voornaam",
+        "lastName": "Achternaam",
+        "dob": "Geboortedatum",
+        "email": "E-mailadres",
+        "emailConfirm": "Bevestig e-mailadres",
+        "errors": {
+            "firstRequired": "Voornaam is verplicht",
+            "lastRequired": "Achternaam is verplicht",
+            "dobRequired": "Geboortedatum is verplicht",
+            "emailInvalid": "Vul een geldig e-mailadres in.",
+            "emailListInvalid": "E-mailadres is ongeldig of ontbreekt",
+            "emailsMismatch": "E-mailadressen komen niet overeen.",
+            "emailConfirmMissing": "Bevestig je e-mailadres.",
+            "sendFailed": "Er is een fout opgetreden bij het versturen. Probeer het later opnieuw."
+        },
+        "notePlaceholder": "Opmerkingen (optioneel)",
+        "noteHelpText": "Vul je naam, geboortedatum en e-mailadres in zodat we je aanvraag goed kunnen koppelen.",
+        "modal": {
+            "sentTitle": "Aanvraag verstuurd",
+            "sentText": "We nemen spoedig contact met je op via e-mail.",
+            "successMessage": "We hebben je aanvraag ontvangen en zullen deze zo spoedig mogelijk beoordelen.",
+            "successConfirmation": "Aanvraag succesvol verzonden"
+        }
+    },
+    "misc": {
+        "dash": "-"
+    },
+    "spinnenweb": {
+        "title": "Spinnenweb (Positieve Gezondheid)",
+        "intro": "Beantwoord de vragen per domein (0–10). Daarna tonen we je spinnenweb.",
+        "scaleLegend": "Schaal: 0 = helemaal niet, 10 = helemaal wel",
+        "remaining": "Nog {{count}} te gaan",
+        "quickFill": "Snel vullen (random)",
+        "progress": "{{answered}}/{{total}} ingevuld",
+        "viewChart": "Bekijk spinnenweb",
+        "back": "Terug",
+        "chartTitle": "Jouw Spinnenweb",
+        "complete": "Compleet",
+        "averages": "Gemiddelde scores (0–10) per domein, op basis van je antwoorden.",
+        "downloading": "Bezig...",
+        "downloadPdf": "Download PDF",
+        "pdfFileName": "spinnenweb-positieve-gezondheid.pdf",
+        "highestDomains": "Hoogste domeinen",
+        "answerToSee": "Beantwoord eerst de vragen om je resultaten te zien.",
+        "focusDomains": "Domeinen om te onderzoeken",
+        "allBalanced": "Alle domeinen staan voorlopig in balans.",
+        "scoreOverview": "Score Overzicht",
+        "explainer": "Dit spinnenweb toont je gemiddelde score (0–10) per domein. Het is bedoeld als reflectiehulpmiddel en geen diagnose. Bespreek je profiel met een professional voor context en vervolgstappen.",
+        "congratsTitle": "Gefeliciteerd! Je hebt het spinnenweb voltooid.",
+        "congratsText": "Alle vragen zijn beantwoord en je persoonlijke spinnenweb is gereed.",
+        "backToQuestions": "Terug naar vragen",
+        "finish": "Afronden",
+        "filled": "Ingevuld",
+        "domains": {
+            "Lichamelijk": "Lichamelijk",
+            "Mentaal": "Mentaal",
+            "Zingeving": "Zingeving",
+            "Kwaliteit van leven": "Kwaliteit van leven",
+            "Meedoen": "Meedoen",
+            "Dagelijks functioneren": "Dagelijks functioneren"
+        },
+        "questions": {
+            "lich-1": "Ik voel me lichamelijk fit.",
+            "lich-2": "Ik slaap voldoende en herstel goed.",
+            "lich-3": "Ik heb genoeg energie voor dagelijkse activiteiten.",
+            "ment-1": "Ik kan goed omgaan met stress.",
+            "ment-2": "Ik voel me positief en veerkrachtig.",
+            "ment-3": "Ik ervaar weinig piekeren.",
+            "zing-1": "Ik heb een duidelijk gevoel van richting.",
+            "zing-2": "Mijn activiteiten voelen betekenisvol.",
+            "zing-3": "Ik leef volgens mijn waarden.",
+            "kvl-1": "Ik ben tevreden met mijn leven.",
+            "kvl-2": "Ik geniet van dagelijkse dingen.",
+            "kvl-3": "Mijn leven voelt in balans.",
+            "mdn-1": "Ik heb steun uit mijn sociale omgeving.",
+            "mdn-2": "Ik voel me onderdeel van een community.",
+            "mdn-3": "Ik kan deelnemen aan activiteiten die ik belangrijk vind.",
+            "dfn-1": "Ik kan dagelijkse taken uitvoeren zoals ik wil.",
+            "dfn-2": "Ik red mijn werk/studie goed.",
+            "dfn-3": "Ik kan mijn tijd effectief indelen."
+        }
+    }
+}

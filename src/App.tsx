@@ -1,76 +1,106 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './App.css'
 import Spinnenweb, { type SpinnenwebResult } from './components/Spinnenweb'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from './components/LanguageSwitcher'
+import { sendAdviceRequest } from './utils/sendAdviceRequest'
 // import utilities removed as export/print actions are no longer used
 
-type Step = 'landing' | 'tests' | 'quiz' | 'summary'
+type Step = 'landing' | 'tests' | 'quiz' | 'summary' | 'success'
 
 // advies-vraag verwijderd
 
 function App() {
-    const [step, setStep] = useState<Step>('landing')
+	const { t, i18n } = useTranslation()
+	const [step, setStep] = useState<Step>('landing')
 	const [numAppointments, setNumAppointments] = useState<number | null>(null)
     const [preferences, setPreferences] = useState<string[]>([])
 	const [selectedTest, setSelectedTest] = useState<'spinnenweb' | ''>('')
 	const [resultSpinnenweb, setResultSpinnenweb] = useState<SpinnenwebResult | null>(null)
+	const [spinnenwebAnswers, setSpinnenwebAnswers] = useState<Record<string, number>>({})
 	const [contactFirstName, setContactFirstName] = useState<string>('')
 	const [contactLastName, setContactLastName] = useState<string>('')
 	const [contactDob, setContactDob] = useState<string>('')
 	const [contactEmail, setContactEmail] = useState<string>('')
+	const [contactEmailConfirm, setContactEmailConfirm] = useState<string>('')
 	const [contactNote, setContactNote] = useState<string>('')
-	const [adviceRequestSent, setAdviceRequestSent] = useState<boolean>(false)
 	const [quizErrors, setQuizErrors] = useState<string[]>([])
 	const [adviceErrors, setAdviceErrors] = useState<string[]>([])
 	const [quizAttempted, setQuizAttempted] = useState<boolean>(false)
 	const [adviceAttempted, setAdviceAttempted] = useState<boolean>(false)
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+	const chartRef = useRef<HTMLDivElement>(null)
+	const [spinnenwebPdfBlob, setSpinnenwebPdfBlob] = useState<Blob | null>(null)
 
     // advies-vraag verwijderd
 
     // resetQuiz niet meer gebruikt na UI-herstructurering
 
-    const isQuizComplete = numAppointments !== null && preferences.length > 0
+	const isQuizComplete = numAppointments !== null && preferences.length > 0
 
-	function handleRequestAdvice() {
-		// Verzamel resultaten voor een eventuele backend-integratie
-        const payload = {
-			contactFirstName,
-			contactLastName,
-			contactDob,
-			contactEmail,
-			contactNote,
-			numAppointments,
-			preferences,
-			selectedTest,
-			resultSpinnenweb,
+	async function handleRequestAdvice() {
+		setIsSubmitting(true)
+		setAdviceErrors([])
+
+		try {
+			const result = await sendAdviceRequest({
+				firstName: contactFirstName,
+				lastName: contactLastName,
+				dateOfBirth: contactDob,
+				email: contactEmail,
+				numAppointments: numAppointments!,
+				preferences: preferences,
+				notes: contactNote,
+				language: i18n.language,
+				spinnenwebResult: resultSpinnenweb,
+				pdfBlob: spinnenwebPdfBlob,
+			})
+
+			if (result.success) {
+				setStep('success')
+			} else {
+				setAdviceErrors(['advice.errors.sendFailed'])
+			}
+		} catch (error) {
+			console.error('Error submitting advice request:', error)
+			setAdviceErrors(['advice.errors.sendFailed'])
+		} finally {
+			setIsSubmitting(false)
 		}
-		console.log('Aanvraag behandeladvies:', payload)
-		setAdviceRequestSent(true)
-	}
+	}	return (
+		<div className="min-h-screen bg-linear-to-b from-orange-50/80 via-amber-50/50 to-orange-50/30 py-8">
+			<div className="max-w-3xl mx-auto p-6 sm:p-8 space-y-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-100">
+				{/* Logo header - visible on all steps */}
+				<div className="flex items-center justify-between gap-3 pb-6 border-b border-orange-200/50 mb-2">
+					<div className="flex items-center gap-3">
+						<img 
+							src="/kruis.png" 
+							alt={t('app.logoAlt')} 
+							className="h-16 w-auto rounded-4xl"
+						/>
+						<div className="flex flex-col">
+							<span className="text-2xl font-medium"><span className="text-gray-500">student</span><span className="text-orange-500">arts</span></span>
+						</div>
+					</div>
+					<LanguageSwitcher />
+				</div>
 
-	return (
-		<div className="max-w-3xl mx-auto p-6 sm:p-8 space-y-6 bg-gradient-to-b from-orange-50 via-amber-50 to-white dark:from-orange-900/20 dark:via-amber-900/10 dark:to-background rounded-2xl">
 			{step === 'landing' && (
 				<div className="space-y-4">
-					<h1 className="text-3xl font-semibold tracking-tight bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Student Mentaal </h1>
-					<h2 className="text-2xl font-medium tracking-tight">Hoe schakel je onze hulp verantwoord in?</h2>
+					<h1 className="text-4xl font-semibold tracking-tight text-gray-800 dark:text-gray-100">{t('landing.header')}</h1>
+					<h2 className="text-xl font-medium tracking-tight text-gray-700 dark:text-gray-200">{t('landing.title')}</h2>
 					<ol className="list-decimal pl-6 space-y-1">
-						<li>
-							Vul de vragenlijst in. Je ontvangt direct een persoonlijk rapport met je testuitslagen.
-						</li>
-						<li>
-							Onze huisarts of POH‑GGZ screent je antwoorden. Je hoort snel of, en op welke manier, je in aanmerking komt voor een hulpverleningstraject.
-						</li>
+						<li>{t('landing.step1')}</li>
+						<li>{t('landing.step2')}</li>
 
 					</ol>
-					<p className="leading-relaxed text-foreground/90">
-						Zoek je meer gespecialiseerde psychologische zorg of ben je al in behandeling? Neem dan rechtstreeks contact op met een psychologenpraktijk. Bekijk ook of online psychologische hulp bij je past; dit is vaak even effectief als face-to-face contact.
-					</p>
+					<p className="leading-relaxed text-foreground/90">{t('landing.paragraph')}</p>
 					<div className="flex justify-end gap-3 pt-2">
 						<button
 							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
 							onClick={() => setStep('quiz')}
 						>
-							Start
+							{t('actions.start')}
 						</button>
 					</div>
 				</div>
@@ -78,28 +108,35 @@ function App() {
 
 			{step === 'tests' && (
 				<div className="space-y-5">
-					<h2 className="text-2xl font-semibold tracking-tight">Vragenlijst: Het Spinnenweb (Optioneel)</h2>
-					<p className="text-muted-foreground">Vul de vragenlijst in of ga naar afronden.</p>
+					<h2 className="text-2xl font-semibold tracking-tight">{t('tests.title')}</h2>
+					<p className="text-muted-foreground">{t('tests.subtitle')}</p>
 					<div className="grid gap-4">
                         <div className="rounded-xl border bg-card text-card-foreground shadow p-5 flex flex-col gap-3">
 							<div className="flex items-start justify-between gap-2">
 								<div>
-									<h3 className="text-lg font-semibold">Spinnenweb (Positieve Gezondheid)</h3>
-									<p className="text-sm text-muted-foreground">Zelfscan over 6 levensdomeinen</p>
+									<h3 className="text-lg font-semibold">{t('tests.card.title')}</h3>
+									<p className="text-sm text-muted-foreground">{t('tests.card.subtitle')}</p>
 								</div>
-								<span className="inline-flex h-8 items-center rounded-full bg-orange-100 text-orange-700 px-3 text-xs font-medium dark:bg-orange-900/40 dark:text-orange-200">Reflectie</span>
+								<span className="inline-flex h-8 items-center rounded-full bg-orange-100 text-orange-700 px-3 text-xs font-medium dark:bg-orange-900/40 dark:text-orange-200">{t('badges.reflection')}</span>
 							</div>
 							<ul className="text-sm list-disc pl-5 space-y-1 text-foreground/90">
-								<li>Is een onderzoek naar jouw mentaal welbevinden</li>
-								<li>Helpt bij inzicht en gesprek over wat voor jou belangrijk is</li>
+								<li>{t('tests.card.bullet1')}</li>
+								<li>{t('tests.card.bullet2')}</li>
 							</ul>
 							<div className="mt-auto flex justify-between items-center">
-								{resultSpinnenweb && <span className="text-xs text-green-600">Ingevuld</span>}
+								{resultSpinnenweb && (
+									<div className="flex items-center gap-2 text-green-600">
+										<svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+										</svg>
+										<span className="text-sm font-medium">{t('status.completed')}</span>
+									</div>
+								)}
 								<button
 									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
 									onClick={() => { setSelectedTest('spinnenweb'); setStep('quiz') }}
 								>
-									{resultSpinnenweb ? 'Wijzig Spinnenweb' : 'Start Spinnenweb'}
+									{resultSpinnenweb ? t('actions.changeSpinnenweb') : t('actions.startSpinnenweb')}
 								</button>
 							</div>
 						</div>
@@ -109,13 +146,13 @@ function App() {
 							className="inline-flex items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
 							onClick={() => setStep('landing')}
 						>
-							Terug
+							{t('actions.back')}
 						</button>
 						<button
 							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
 							onClick={() => setStep('summary')}
 						>
-							Afronden
+							{resultSpinnenweb ? t('actions.requestAdvice') : t('actions.finish')}
 						</button>
 					</div>
 				</div>
@@ -126,29 +163,35 @@ function App() {
 			{step === 'quiz' && selectedTest === 'spinnenweb' && (
 				<Spinnenweb
 					onBack={() => setStep('tests')}
-					onComplete={(res) => {
+					onComplete={(res, answers) => {
 						setResultSpinnenweb(res)
+						setSpinnenwebAnswers(answers)
 						setStep('tests')
 					}}
+					onChartReady={(pdfBlob) => {
+						setSpinnenwebPdfBlob(pdfBlob)
+					}}
+					initialAnswers={spinnenwebAnswers}
+					chartRef={chartRef}
 				/>
 			)}
 
             {step === 'quiz' && selectedTest === '' && (
 				<div className="space-y-4">
-					<h2 className="text-2xl font-semibold tracking-tight">Algemene vragen</h2>
-					<p className="text-sm text-muted-foreground">Beantwoord eerst de algemene vragen. Daarna kun je (optioneel) het Spinnenweb invullen.</p>
+					<h2 className="text-2xl font-semibold tracking-tight">{t('quiz.generalTitle')}</h2>
+					<p className="text-sm text-muted-foreground">{t('quiz.generalSubtitle')}</p>
 					{quizErrors.length > 0 && (
 						<div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-							<p className="font-medium">Vul de ontbrekende velden in:</p>
+							<p className="font-medium">{t('quiz.errorsHeading')}</p>
 							<ul className="list-disc pl-5 mt-1">
 								{quizErrors.map((e) => (
-									<li key={e}>{e}</li>
+									<li key={e}>{t(e)}</li>
 								))}
 							</ul>
 						</div>
 					)}
 					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3 ${quizAttempted && numAppointments === null ? 'border-red-300' : ''}`}>
-                    <p className="text-sm font-medium text-muted-foreground">1. Schat in hoeveel afspraken denk je nodig te hebben?</p>
+                    <p className="text-sm font-medium text-muted-foreground">{t('quiz.q1Label')}</p>
 						<div className="grid grid-cols-9 gap-2">
 							{Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
 								<label
@@ -168,18 +211,18 @@ function App() {
 							))}
 						</div>
 						{quizAttempted && numAppointments === null && (
-							<p className="text-xs text-red-600">Dit veld is verplicht.</p>
+							<p className="text-xs text-red-600">{t('quiz.q1Required')}</p>
 						)}
 					</div>
 
 					<div className={`rounded-xl border bg-card text-card-foreground shadow p-5 space-y-3 ${quizAttempted && preferences.length === 0 ? 'border-red-300' : ''}`}>
-                    <p className="text-sm font-medium text-muted-foreground">2. Welke behandeling(en) hebben jouw voorkeur?</p>
+                    <p className="text-sm font-medium text-muted-foreground">{t('quiz.q2Label')}</p>
 						<div className="flex flex-col gap-2">
 								{[
-									{ key: 'poh_ggz', label: 'Face to face met POH GGZ' },
-									{ key: 'sport', label: 'Sport en bewegen' },
-									{ key: 'group', label: 'Groepsbijeenkomst' },
-									{ key: 'online', label: 'Online apps en coaching' },
+									{ key: 'poh_ggz', labelKey: 'quiz.preferences.poh_ggz' },
+									{ key: 'sport', labelKey: 'quiz.preferences.sport' },
+									{ key: 'group', labelKey: 'quiz.preferences.group' },
+									{ key: 'online', labelKey: 'quiz.preferences.online' },
 								].map((opt) => {
 								const checked = preferences.includes(opt.key)
 								return (
@@ -201,13 +244,13 @@ function App() {
 											}}
 											className="sr-only"
 										/>
-										<span>{opt.label}</span>
+										<span>{t(opt.labelKey)}</span>
 									</label>
 								)
 							})}
 						</div>
 						{quizAttempted && preferences.length === 0 && (
-							<p className="text-xs text-red-600">Kies minimaal één optie.</p>
+							<p className="text-xs text-red-600">{t('quiz.q2Required')}</p>
 						)}
 					</div>
 
@@ -216,7 +259,7 @@ function App() {
 							className="inline-flex items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
 							onClick={() => setStep('landing')}
 						>
-							Terug
+							{t('actions.back')}
 						</button>
 						<button
 							className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
@@ -227,15 +270,15 @@ function App() {
 									setStep('tests')
 								} else {
 									const errs: string[] = []
-									if (numAppointments === null) errs.push('Schat het aantal afspraken')
-									if (preferences.length === 0) errs.push('Kies minimaal één voorkeursbehandeling')
+									if (numAppointments === null) errs.push('quiz.errors.numAppointments')
+									if (preferences.length === 0) errs.push('quiz.errors.preferences')
 									setQuizErrors(errs)
 									setQuizAttempted(true)
 									window.scrollTo({ top: 0, behavior: 'smooth' })
 								}
 							}}
 						>
-							Verder naar Spinnenweb
+							{t('actions.nextToSpinnenweb')}
 						</button>
 					</div>
 				</div>
@@ -243,118 +286,149 @@ function App() {
 
 			{step === 'summary' && (
 				<div className="space-y-4">
-					<h2 className="text-2xl font-semibold tracking-tight">Samenvatting</h2>
-					<p className="text-xs text-muted-foreground">Let op: interpretaties zijn indicatief en vervangen geen diagnose.</p>
+					<h2 className="text-2xl font-semibold tracking-tight">{t('summary.title')}</h2>
+					<p className="text-xs text-muted-foreground">{t('summary.disclaimer')}</p>
 					{adviceErrors.length > 0 && (
 						<div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-							<p className="font-medium">Vul de volgende gegevens in:</p>
+							<p className="font-medium">{t('summary.fillFieldsHeading')}</p>
 							<ul className="list-disc pl-5 mt-1">
 								{adviceErrors.map((e) => (
-									<li key={e}>{e}</li>
+									<li key={e}>{t(e)}</li>
 								))}
 							</ul>
 						</div>
 					)}
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
-						<p className="text-sm font-medium text-muted-foreground">Spinnenweb (optioneel)</p>
-						<p className="text-lg font-semibold">{resultSpinnenweb ? 'Ingevuld' : '-'}</p>
-					</div>
+						<p className="text-sm font-medium text-muted-foreground">{t('summary.spinnenwebOptional')}</p>
+						{resultSpinnenweb ? (
+							<div className="flex items-center gap-2 text-green-600">
+								<svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+								<span className="text-lg font-semibold">{t('status.completed')}</span>
+							</div>
+						) : (
+							<p className="text-lg font-semibold text-muted-foreground">{t('misc.dash')}</p>
+						)}</div>
 					{resultSpinnenweb && (
 						<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
-							<p className="text-sm font-medium text-muted-foreground">Spinnenweb scores:</p>
+							<p className="text-sm font-medium text-muted-foreground">{t('summary.spinnenwebScores')}</p>
 							<ul className="grid sm:grid-cols-2 gap-2 text-sm">
 								{Object.entries(resultSpinnenweb).map(([k, v]) => (
-									<li key={k}><span className="font-medium">{k}:</span> {v}</li>
+									<li key={k}><span className="font-medium">{t(`spinnenweb.domains.${k}`)}:</span> {v}</li>
 								))}
 							</ul>
 						</div>
 					)}
 				<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
-						<p className="text-sm font-medium text-muted-foreground">Geschat aantal afspraken:</p>
+						<p className="text-sm font-medium text-muted-foreground">{t('summary.estimatedAppointments')}</p>
 						<p className="text-lg font-semibold">{numAppointments ?? '-'}</p>
 					</div>
 					<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
-						<p className="text-sm font-medium text-muted-foreground">Voorkeursbehandeling(en):</p>
+						<p className="text-sm font-medium text-muted-foreground">{t('summary.preferredTreatments')}</p>
 						<ul className="flex flex-wrap gap-2">
-							{preferences.length === 0 && <li className="text-sm text-muted-foreground">-</li>}
-							{preferences.includes('poh_ggz') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Face to face met POH GGZ</li>}
-							{preferences.includes('sport') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Sport en bewegen</li>}
-							{preferences.includes('group') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Groepsbijeenkomst lotgenoten</li>}
-							{preferences.includes('online') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">Online apps en coaching</li>}
+							{preferences.length === 0 && <li className="text-sm text-muted-foreground">{t('misc.dash')}</li>}
+							{preferences.includes('poh_ggz') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">{t('quiz.preferences.poh_ggz')}</li>}
+							{preferences.includes('sport') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">{t('quiz.preferences.sport')}</li>}
+							{preferences.includes('group') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">{t('quiz.preferences.group')}</li>}
+							{preferences.includes('online') && <li className="px-2 py-1 rounded-md bg-orange-100 text-orange-800 text-sm">{t('quiz.preferences.online')}</li>}
 						</ul>
 					</div>
 
 				{/* Behandeladvies aanvragen - onderaan en als enige actieknop */}
 				<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-4">
-					<p className="text-sm font-medium text-muted-foreground">Vraag behandeladvies aan</p>
-						<div className="grid gap-3 sm:grid-cols-2">
+					<p className="text-sm font-medium text-muted-foreground">{t('advice.sectionTitle')}</p>
+						<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 						<div className="flex flex-col gap-1">
-							<label htmlFor="contactFirstName" className="text-xs font-medium text-muted-foreground">Voornaam</label>
+							<label htmlFor="contactFirstName" className="text-xs font-medium text-muted-foreground">{t('advice.firstName')}</label>
 								<input
 								id="contactFirstName"
 								type="text"
-								placeholder="Voornaam"
+								placeholder={t('advice.firstName')}
 								value={contactFirstName}
-									onChange={(e) => { setContactFirstName(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									onChange={(e) => { setContactFirstName(e.target.value); setAdviceErrors([]) }}
 									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && contactFirstName.trim().length < 2 ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
 								{adviceAttempted && contactFirstName.trim().length < 2 && (
-									<p className="text-xs text-red-600">Voornaam is verplicht.</p>
+									<p className="text-xs text-red-600">{t('advice.errors.firstRequired')}.</p>
 								)}
 						</div>
 						<div className="flex flex-col gap-1">
-							<label htmlFor="contactLastName" className="text-xs font-medium text-muted-foreground">Achternaam</label>
+							<label htmlFor="contactLastName" className="text-xs font-medium text-muted-foreground">{t('advice.lastName')}</label>
 								<input
 								id="contactLastName"
 								type="text"
-								placeholder="Achternaam"
+								placeholder={t('advice.lastName')}
 								value={contactLastName}
-									onChange={(e) => { setContactLastName(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									onChange={(e) => { setContactLastName(e.target.value); setAdviceErrors([]) }}
 									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && contactLastName.trim().length < 2 ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
 								{adviceAttempted && contactLastName.trim().length < 2 && (
-									<p className="text-xs text-red-600">Achternaam is verplicht.</p>
+									<p className="text-xs text-red-600">{t('advice.errors.lastRequired')}.</p>
 								)}
 						</div>
 						<div className="flex flex-col gap-1">
-							<label htmlFor="contactDob" className="text-xs font-medium text-muted-foreground">Geboortedatum</label>
+							<label htmlFor="contactDob" className="text-xs font-medium text-muted-foreground">{t('advice.dob')}</label>
 								<input
 								id="contactDob"
 								type="date"
 								value={contactDob}
-									onChange={(e) => { setContactDob(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									onChange={(e) => { setContactDob(e.target.value); setAdviceErrors([]) }}
 									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && !contactDob ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
 								{adviceAttempted && !contactDob && (
-									<p className="text-xs text-red-600">Geboortedatum is verplicht.</p>
+									<p className="text-xs text-red-600">{t('advice.errors.dobRequired')}.</p>
 								)}
 						</div>
 						<div className="flex flex-col gap-1">
-							<label htmlFor="contactEmail" className="text-xs font-medium text-muted-foreground">E-mailadres</label>
+							<label htmlFor="contactEmail" className="text-xs font-medium text-muted-foreground">{t('advice.email')}</label>
 								<input
 								id="contactEmail"
 								type="email"
 								placeholder="jouw@email.nl"
 								value={contactEmail}
-									onChange={(e) => { setContactEmail(e.target.value); setAdviceRequestSent(false); setAdviceErrors([]) }}
+									onChange={(e) => { setContactEmail(e.target.value); setAdviceErrors([]) }}
 									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail) ? 'border-red-500 ring-1 ring-red-500' : ''}`}
 							/>
 								{adviceAttempted && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail) && (
-									<p className="text-xs text-red-600">Vul een geldig e-mailadres in.</p>
+									<p className="text-xs text-red-600">{t('advice.errors.emailInvalid')}</p>
+								)}
+						</div>
+						<div className="flex flex-col gap-1">
+							<label htmlFor="contactEmailConfirm" className="text-xs font-medium text-muted-foreground">{t('advice.emailConfirm')}</label>
+								<input
+								id="contactEmailConfirm"
+								type="email"
+								placeholder="jouw@email.nl"
+								value={contactEmailConfirm}
+									onChange={(e) => { setContactEmailConfirm(e.target.value); setAdviceErrors([]) }}
+									className={`rounded-md border bg-background px-3 py-2 text-sm ${adviceAttempted && (contactEmail !== contactEmailConfirm || !contactEmailConfirm) ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+							/>
+								{adviceAttempted && contactEmail !== contactEmailConfirm && (
+									<p className="text-xs text-red-600">{t('advice.errors.emailsMismatch')}</p>
+								)}
+								{adviceAttempted && !contactEmailConfirm && contactEmail && (
+									<p className="text-xs text-red-600">{t('advice.errors.emailConfirmMissing')}</p>
 								)}
 						</div>
 					</div>
 					<div className="grid gap-2">
 						<textarea
-							placeholder="Opmerkingen (optioneel)"
+							placeholder={t('advice.notePlaceholder')}
 							value={contactNote}
-							onChange={(e) => { setContactNote(e.target.value); setAdviceRequestSent(false) }}
+							onChange={(e) => { setContactNote(e.target.value) }}
 							rows={4}
 							className="rounded-md border bg-background px-3 py-2 text-sm"
 						/>
-						<p className="text-xs text-muted-foreground">Vul je naam, geboortedatum en e-mailadres in zodat we je aanvraag goed kunnen koppelen.</p>
+						<p className="text-xs text-muted-foreground">{t('advice.noteHelpText')}</p>
 					</div>
-					<div className="flex justify-end">
+					<div className="flex justify-between items-center">
+						<button
+							className="inline-flex items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
+							onClick={() => setStep('tests')}
+						>
+							{t('actions.back')}
+						</button>
 						{(() => {
 							const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)
 							const firstOk = contactFirstName.trim().length >= 2
@@ -362,17 +436,17 @@ function App() {
 							const dobOk = Boolean(contactDob)
 							return (
 								<button
-									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow"
+									className="inline-flex items-center justify-center rounded-md bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-sm font-medium shadow disabled:opacity-50 disabled:cursor-not-allowed"
+									disabled={isSubmitting}
 									onClick={() => {
 										const errs: string[] = []
-										if (!firstOk) errs.push('Voornaam is verplicht')
-										if (!lastOk) errs.push('Achternaam is verplicht')
-										if (!dobOk) errs.push('Geboortedatum is verplicht')
-										if (!emailOk) errs.push('E-mailadres is ongeldig of ontbreekt')
+										if (!firstOk) errs.push('advice.errors.firstRequired')
+										if (!lastOk) errs.push('advice.errors.lastRequired')
+										if (!dobOk) errs.push('advice.errors.dobRequired')
+										if (!emailOk) errs.push('advice.errors.emailListInvalid')
 										if (errs.length > 0) {
 											setAdviceErrors(errs)
 											setAdviceAttempted(true)
-											setAdviceRequestSent(false)
 											window.scrollTo({ top: 0, behavior: 'smooth' })
 											return
 										}
@@ -381,32 +455,58 @@ function App() {
 										handleRequestAdvice()
 									}}
 								>
-									Vraag behandeladvies aan
+									{isSubmitting ? (
+										<>
+											<svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+												<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+												<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+											</svg>
+											{t('actions.sending') || 'Versturen...'}
+										</>
+									) : (
+										t('actions.requestAdvice')
+									)}
 								</button>
 							)
 						})()}
 					</div>
-					{/* modal popup voor bevestiging */}
-					{adviceRequestSent && (
-						<div className="fixed inset-0 z-50 flex items-center justify-center">
-							<div className="absolute inset-0 bg-black/40" onClick={() => setAdviceRequestSent(false)} />
-							<div className="relative z-10 w-full max-w-sm rounded-xl border bg-white p-6 shadow-lg dark:bg-background">
-								<h3 className="text-lg font-semibold">Aanvraag verstuurd</h3>
-								<p className="mt-1 text-sm text-muted-foreground">We nemen spoedig contact met je op via e-mail.</p>
-								<div className="mt-4 flex justify-end">
-									<button
-										className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
-										onClick={() => setAdviceRequestSent(false)}
-									>
-										Sluiten
-									</button>
-								</div>
-							</div>
-						</div>
-					)}
 				</div>
 				</div>
 			)}
+
+			{step === 'success' && (
+				<div className="space-y-4">
+					<div className="rounded-xl border bg-linear-to-br from-green-50/50 to-emerald-50/50 border-green-200/50 p-8 space-y-4">
+						<div className="flex items-center justify-center gap-3">
+							<div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+								<svg className="h-7 w-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+								</svg>
+							</div>
+						</div>
+						
+						<div className="space-y-2 text-center">
+							<h2 className="text-2xl font-semibold tracking-tight text-gray-800">{t('advice.modal.sentTitle')}</h2>
+							<p className="text-sm text-muted-foreground">{t('advice.modal.sentText')}</p>
+						</div>
+					</div>
+
+					{ (
+						<div className="rounded-xl border bg-card text-card-foreground shadow p-5 space-y-2">
+							<div className="flex items-center gap-2 text-orange-600">
+								<svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+								<span className="text-sm font-medium">{t('advice.modal.successConfirmation')}</span>
+							</div>
+							<p className="text-sm text-muted-foreground">
+								{t('advice.modal.successMessage')}
+							</p>
+						</div>
+					)}
+				</div>
+			)}
+		</div>
 		</div>
 	)
 }

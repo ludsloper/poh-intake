@@ -1,0 +1,8 @@
+
+
+- spinnenweb willekeurig invullen verwijderen
+- deployen op reissstudentarts.nl
+Domeinnaam beheer doen neostrada naar reis.studentarts.nl -> reisstudentarts server
+ 
+
+Link op studentarts.nl
