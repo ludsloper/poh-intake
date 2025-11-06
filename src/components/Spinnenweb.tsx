@@ -283,7 +283,7 @@ export default function Spinnenweb({
 							<p className="text-sm text-muted-foreground">{t('spinnenweb.intro')}</p>
 							<p className="text-xs text-muted-foreground">{t('spinnenweb.scaleLegend')}</p>
 						</div>
-						<div className="flex items-center gap-2">
+						{/* <div className="flex items-center gap-2">
 							<span className="text-sm text-muted-foreground">{t('spinnenweb.remaining', { count: remaining })}</span>
 							<button
 								className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-1.5 text-xs font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30"
@@ -296,7 +296,7 @@ export default function Spinnenweb({
 							>
 								{t('spinnenweb.quickFill')}
 							</button>
-						</div>
+						</div> */}
 					</div>
 
 					<div className="rounded-lg border bg-muted/40 p-4">
