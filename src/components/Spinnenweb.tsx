@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toPng } from 'html-to-image'
-import { jsPDF } from 'jspdf'
+import jsPDF from 'jspdf'
 
 type Domain =
 	| 'Lichamelijk'
