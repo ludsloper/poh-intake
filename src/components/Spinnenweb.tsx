@@ -397,7 +397,7 @@ export default function Spinnenweb({
 							</div>
 							<p className="text-sm text-muted-foreground">{t('spinnenweb.averages')}</p>
 						</div>
-						<button
+						{/* <button
 							className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 gap-2"
 							onClick={handleDownloadPDF}
 							disabled={isDownloading}
@@ -417,7 +417,7 @@ export default function Spinnenweb({
 										<span>{t('spinnenweb.downloadPdf')}</span>
 								</>
 							)}
-						</button>
+						</button> */}
 					</div>
 
 						<div className="rounded-xl border bg-card text-card-foreground shadow max-w-2xl mx-auto">
