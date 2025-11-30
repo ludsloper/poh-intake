@@ -75,7 +75,7 @@ function App() {
 		}
 	}	return (
 		<div className="min-h-screen bg-gray-50 md:bg-linear-to-b md:from-orange-100/80 md:via-amber-100/50 md:to-orange-100/30 py-0 md:py-8 px-0 sm:px-0">
-			<div className="max-w-3xl mx-auto p-5 sm:p-6 md:p-8 space-y-5 sm:space-y-6 bg-white md:bg-white/80 dark:bg-gray-900 md:dark:bg-gray-900/80 backdrop-blur-sm rounded-none md:rounded-2xl shadow-none md:shadow-lg border-0 md:border md:border-orange-100">
+			<div className="max-w-3xl mx-auto p-5 sm:p-6 md:p-8 space-y-5 sm:space-y-6 bg-white md:bg-white/80 backdrop-blur-sm rounded-none md:rounded-2xl shadow-none md:shadow-lg border-0 md:border md:border-orange-100">
 				{/* Logo header - visible on all steps */}
 				<div className="flex items-center justify-between gap-2 sm:gap-3 pb-4 sm:pb-6 border-b border-orange-200/50 mb-2">
 					<div className="flex items-center gap-2 sm:gap-3">
@@ -93,8 +93,8 @@ function App() {
 
 			{step === 'landing' && (
 				<div className="space-y-4 sm:space-y-5">
-					<h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-gray-800 dark:text-gray-100 leading-tight">{t('landing.header')}</h1>
-					<h2 className="text-lg sm:text-xl font-medium tracking-tight text-gray-700 dark:text-gray-200 mt-2">{t('landing.title')}</h2>
+					<h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-gray-800 leading-tight">{t('landing.header')}</h1>
+					<h2 className="text-lg sm:text-xl font-medium tracking-tight text-gray-700 mt-2">{t('landing.title')}</h2>
 					<ol className="list-decimal pl-5 sm:pl-6 space-y-2.5 text-base sm:text-base leading-relaxed">
 						<li className="pl-1">{t('landing.step1')}</li>
 						<li className="pl-1">{t('landing.step2')}</li>
@@ -123,7 +123,7 @@ function App() {
 									<h3 className="text-lg font-semibold">{t('tests.card.title')}</h3>
 									<p className="text-sm text-muted-foreground">{t('tests.card.subtitle')}</p>
 								</div>
-								<span className="inline-flex h-8 items-center rounded-full bg-orange-100 text-orange-700 px-3 text-xs font-medium dark:bg-orange-900/40 dark:text-orange-200">{t('badges.reflection')}</span>
+								<span className="inline-flex h-8 items-center rounded-full bg-orange-100 text-orange-700 px-3 text-xs font-medium">{t('badges.reflection')}</span>
 							</div>
 							<ul className="text-sm list-disc pl-5 space-y-1 text-foreground/90">
 								<li>{t('tests.card.bullet1')}</li>
@@ -149,7 +149,7 @@ function App() {
 					</div>
 					<div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2">
 						<button
-							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 active:bg-orange-100"
+							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 active:bg-orange-100"
 							onClick={() => changeStep('landing')}
 						>
 							{t('actions.back')}
@@ -158,7 +158,7 @@ function App() {
 							className={`inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-base font-medium shadow-sm ${
 								resultSpinnenweb 
 									? 'bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700' 
-									: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700'
+									: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100'
 							}`}
 							onClick={() => changeStep('summary')}
 						>
@@ -206,7 +206,7 @@ function App() {
 							{Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
 								<label
 									key={n}
-									className={`${numAppointments === n ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} inline-flex items-center justify-center gap-2 rounded-lg border px-3 sm:px-3 py-3 text-base font-medium cursor-pointer`}
+									className={`${numAppointments === n ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50' : 'hover:bg-orange-50'} inline-flex items-center justify-center gap-2 rounded-lg border px-3 sm:px-3 py-3 text-base font-medium cursor-pointer`}
 								>
 									<input
 										type="radio"
@@ -238,7 +238,7 @@ function App() {
 								return (
 									<label
 										key={opt.key}
-										className={`${checked ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50 dark:bg-orange-900/30' : 'hover:bg-orange-50 dark:hover:bg-orange-900/20'} flex items-center gap-3 rounded-lg border px-4 py-3.5 text-base sm:text-base cursor-pointer`}
+										className={`${checked ? 'border-orange-500 ring-1 ring-orange-500 bg-orange-50' : 'hover:bg-orange-50'} flex items-center gap-3 rounded-lg border px-4 py-3.5 text-base sm:text-base cursor-pointer`}
 									>
 										<input
 											type="checkbox"
@@ -266,7 +266,7 @@ function App() {
 
 					<div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-3">
 						<button
-							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 active:bg-orange-100"
+							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 active:bg-orange-100"
 							onClick={() => changeStep('landing')}
 						>
 							{t('actions.back')}
@@ -434,7 +434,7 @@ function App() {
 					</div>
 					<div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2">
 						<button
-							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 active:bg-orange-100"
+							className="inline-flex items-center justify-center rounded-lg border bg-background px-5 py-2.5 text-base font-medium hover:bg-orange-50 active:bg-orange-100"
 							onClick={() => changeStep('tests')}
 						>
 							{t('actions.back')}

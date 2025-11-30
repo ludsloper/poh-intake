@@ -19,7 +19,7 @@ export default function LanguageSwitcher({ className }: Props) {
       className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border transition-colors ${
         current === lng
           ? 'bg-orange-500 text-white border-orange-600'
-          : 'bg-background text-foreground border-muted hover:bg-orange-50 dark:hover:bg-orange-900/30'
+          : 'bg-background text-foreground border-muted hover:bg-orange-50'
       }`}
       aria-pressed={current === lng}
     >
